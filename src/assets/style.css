@@ -1,0 +1,249 @@
+a.btn {
+    margin: 10px;
+}
+.center-content {
+    text-align: center;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.article {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+}
+
+.content {
+    display: flex;
+    padding: 0.3em 0;
+    list-style: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.content__id,
+.content__author,
+.content__date {
+    flex-basis: 15%;
+}
+
+.content__title {
+    flex: 1;
+    text-align: left;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.button {
+    padding: 0 1rem;
+    font-size: 1.2rem;
+    color: #333;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    cursor: pointer;
+}
+
+.button.active,
+.button:hover {
+    color: #1f975d;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.prev {
+    position: absolute;
+    left: -2.5rem;
+}
+
+.next {
+    position: absolute;
+    right: -2.5rem;
+}
+
+
+/* product 아이템 리스트 */
+.container {
+    max-width: 50%; /* 최대 너비 제한 없음 */
+    min-height: 80vh; /* 전체 뷰포트 높이의 80% */
+    align-content: center;
+ }
+.product-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around ;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+.product-item {
+    flex-basis: calc(33.333% - 20px);
+    border: 1px solid #ddd;
+    padding: 2px;
+    border-radius: 8px;
+}
+
+.product-info p {
+    margin-bottom: 5px; /* 하단 마진 조정 */
+    padding: 2px 0; /* 상하 패딩 조정 */
+}
+
+@media (max-width: 768px) {
+    .product-item {
+        flex-basis: calc(50% - 30px);
+    }
+}
+
+@media (max-width: 480px) {
+    .product-item {
+        flex-basis: 100%;
+    }
+}
+
+/* 검색 창 */
+.header-container {
+    display: flex;
+    justify-content: space-between; /* 양쪽 끝에 요소 정렬 *!*/
+    align-items: center;
+}
+
+.search {
+    position: relative;
+    width: 300px;
+}
+
+.search-img {
+    position : absolute;
+    width: 17px;
+    top: 12px;
+    right: 12px;
+    margin: 0;
+}
+
+
+input {
+    width: 100%;
+    border: 1px solid #bbb;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+}
+
+
+/* 상세 페이지 스타일링 */
+.product-detail {
+    display: flex;
+    align-items: center; /* 세로 중앙 정렬 */
+    justify-content: space-between; /* 요소 간 간격 */
+    padding: 20px;
+}
+
+.product-image, .product-info {
+    flex-basis: 50%;
+    max-width: 100%;
+}
+
+/* 상품 이미지 크기 */
+.product-image {
+    width: 300px;
+    height: 300px;
+    border-radius: 8px;
+}
+
+.product-info {
+    display: flex;
+    margin: 10px;
+    flex-direction: column; /* 아이템들을 세로 방향으로 정렬 */
+    align-items: flex-start; /* 세로 방향의 시작점에 정렬 */
+}
+
+.editable {
+    border: 1px solid #ccc;
+    padding: 5px;
+    display: inline-block;
+}
+.product_a {
+    color: black; /* 글씨 색상을 검정색으로 설정 */
+    text-decoration: none; /* 밑줄 제거 */
+}
+
+.product_a:hover {
+    text-decoration: underline; /* 마우스 호버 시 밑줄 추가 */
+    color: black; /* 마우스 호버 시 글씨 색상을 검정색으로 유지 */
+}
+
+.hidden {
+    display: none;
+}
+
+/* 버튼 css */
+.custom-btn {
+    margin: 20px;
+    outline: none;
+    width: 130px;
+    height: 40px;
+    padding: 10px 25px;
+    border: 2px solid #000;
+    font-family: 'Lato', sans-serif;
+    font-weight: 500;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    display: inline-block;
+}
+.btn-5 {
+    background: #000;
+    color: #fff;
+    line-height: 42px;
+    padding: 0;
+    border: none;
+}
+.btn-5:hover {
+    background: transparent;
+    color: #000;
+    box-shadow:
+            -7px -7px 20px 0px #fff9,
+            -4px -4px 5px 0px #fff9,
+            7px 7px 20px 0px #0002,
+            4px 4px 5px 0px #0001;
+}
+
+
+.btn-5:before,
+.btn-5:after{
+    content:'';
+    position:absolute;
+    top:0;
+    right:0;
+    height:2px;
+    width:0;
+    background: #000;
+    transition:400ms ease all;
+}
+.btn-5:after{
+    right:inherit;
+    top:inherit;
+    left:0;
+    bottom:0;
+}
+.btn-5:hover:before,
+.btn-5:hover:after{
+    width:100%;
+    transition:800ms ease all;
+}
+
+.hidden {
+    display: none;
+}
+
+
+
+
+

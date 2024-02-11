@@ -1,24 +1,20 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import HomePage from './components/homePage';
+import LoginPage from './components/loginpage/loginpage';
+// 다른 페이지 컴포넌트도 여기에 임포트
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/home" element={<HomePage/>} />
+        <Route path="/" element={<LoginPage/>} />
+        <Route path="/login" element={<LoginPage/>} />
+        {/* 다른 경로와 컴포넌트 매핑 */}
+      </Routes>
+    </Router>
   );
 }
 
