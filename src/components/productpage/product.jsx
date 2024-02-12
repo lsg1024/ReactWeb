@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Header from '../fragment/header';
 import BodyHeader from '../fragment/bodyheader';
@@ -34,6 +35,13 @@ const Product = () => {
         setSearchTerm(query);
         setPage(1);
     };
+
+
+    const navigate = useNavigate();
+    
+    const goToProductDetail = (productId) => {
+        navigate(`/product/detail/${productId}`);
+    };
     
 
     return (
@@ -46,7 +54,7 @@ const Product = () => {
                 {products.map(product => (
                     <div key={product.id} className="product-item">
                         <div className='product-info'>
-                        <h4>{product.name}</h4>
+                        <h4 onClick={() => goToProductDetail(product.id)}>{product.name}</h4>
                         <p>Color: {product.color}</p>
                         <p>Size: {product.size}</p>
                         <p>Weight: {product.weight}</p>
