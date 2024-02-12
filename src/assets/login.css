@@ -39,6 +39,7 @@ li {
 h2 {
     color: #0064FF;
     font-size: 2em;
+    font-weight: bold;
 }
 .login_sns {
     padding: 20px;
@@ -188,6 +189,7 @@ h2 {
     color: white;
     font-size: 1.2em;
     letter-spacing: 2px;
+    font-weight: bold;
 }
 
 

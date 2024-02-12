@@ -1,22 +1,66 @@
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 import '../../assets/login.css';
+import logoPath from '../../image/kakao_logo.png';
 
+const LoginPage = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-function LoginPage() {
+  const handleLogin = (event) => {
+    event.preventDefault(); // 폼 제출 시 새로고침 방지
+
+    const loginData = {
+      email,
+      password,
+    };
+
+    console.log("Request Data:", JSON.stringify(loginData));
+
+    // 로그인 요청
+    axios.post('http://localhost:8080/user/login', loginData, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    })
+    .then(response => {
+      const { status, data } = response;
+      if (status === 200) {
+        alert(data.response);
+        window.location.href = '/home';
+      } 
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      if (error.response) {
+        const { status, data } = error.response;
+        if (status === 400 || status === 404) { 
+          let errorMessage = data.message + ": ";
+          for (const [, message] of Object.entries(data.errors)) {
+            errorMessage += `${message} `;
+          }
+          alert(errorMessage);
+        } 
+      } else {
+        alert('로그인 요청을 처리할 수 없습니다.');
+      }
+    });
+  };
+
   return (
     <div className="wrap">
       <div className="login">
         <h2>로그인</h2>
-        <form id="loginForm" style={{ marginTop: '20px', width: '90%' }} method="post">
+        <form onSubmit={handleLogin} style={{ marginTop: '20px', width: '90%' }}>
           <div className="signup_login_id">
-            <input type="email" name="login_email" id="login_email" placeholder="이메일" />
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="이메일" />
           </div>
           <div className="signup_login_pw">
-            <input type="password" name="login_password" id="login_password" placeholder="비밀번호" />
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="비밀번호" />
           </div>
           <div className="signup_submit">
-            <button id="login_button" type="button">로그인</button>
+            <button type="submit" id="login_button">로그인</button>
           </div>
         </form>
 
@@ -32,12 +76,12 @@ function LoginPage() {
           <hr className="social-sign-in__line" style={{ position: 'relative', bottom: '-8px', display: 'block', margin: '0', width: '80%', height: '1px', backgroundColor: '#f1f3f5', border: 'none' }} />
           <span className="social-sign-in__title" style={{ padding: '0 8px', marginBottom: '16px', fontSize: '12px', lineHeight: '14px', letterSpacing: '-.3px', color: '#abb0b5', zIndex: '1', backgroundColor: '#fff' }}>간편로그인</span>
           <div className="login_sns">
-            <li><a style={{ background: '#FAE100' }} href="https://kauth.kakao.com/oauth/authorize?response_type=code&prompt=login&client_id=5491a6e9994ae64c2a5d4a132059656c&redirect_uri=http://localhost:8080/oauth/kakao"><img className="login_img" src="/images/kakao_logo.png" alt="카카오 로그인" /></a></li>
+            <li><a style={{ background: '#FAE100' }} href="https://kauth.kakao.com/oauth/authorize?response_type=code&prompt=login&client_id=5491a6e9994ae64c2a5d4a132059656c&redirect_uri=http://localhost:3000/oauth/kakao"><img className="login_img" src={logoPath} alt="카카오 로그인" /></a></li>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default LoginPage;
