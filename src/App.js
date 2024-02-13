@@ -7,6 +7,7 @@ import ProductPage from './components/productpage/product';
 import ProductDetail from './components/productpage/productDetail';
 import ExcelUpload from './components/storepage/excelLoadPage';
 import ExcelDataList from './components/storepage/excelList';
+import StorePage from './components/storepage/storePage';
 // 다른 페이지 컴포넌트도 여기에 임포트
 
 function App() {
@@ -20,7 +21,7 @@ function App() {
         <Route path="/product/detail/:productId" element={<ProductDetail/>} />
         <Route path="/store/create/excel" element={<ExcelUpload/>}/>
         <Route path="/store/read" element={<ExcelDataList/>}/>
-        
+        <Route path="/stores" element={<StorePage/>}/>
         {/* 다른 경로와 컴포넌트 매핑 */}
       </Routes>
     </Router>
