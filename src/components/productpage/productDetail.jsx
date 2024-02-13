@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '../fragment/header';
 import BodyHeader from '../fragment/bodyheader';
-import '../../assets/style.css';
 import notImage from '../../image/not_ready.png'
 
 const ProductDetail = () => {

@@ -23,8 +23,8 @@ function HomePage() {
             <Link to="/factory/create" className="btn btn-lg btn-secondary">공장 등록</Link>
           </p>
           <p>
-            <Link to="/stores" className="btn btn-lg btn-secondary">가게 관리</Link>
-            <Link to="/stores/create/excel" className="btn btn-lg btn-secondary">가게 등록</Link>
+            <Link to="/store" className="btn btn-lg btn-secondary">가게 관리</Link>
+            <Link to="/store/create/excel" className="btn btn-lg btn-secondary">가게 등록</Link>
           </p>
           <p>
             <Link to="/user" className="btn btn-lg btn-secondary">사용자 관리</Link>

@@ -4,7 +4,6 @@ import axios from 'axios';
 import Header from '../fragment/header';
 import BodyHeader from '../fragment/bodyheader';
 import SearchBox from '../searchBox';
-import '../../assets/style.css';
 
 
 const Product = () => {
