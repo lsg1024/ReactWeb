@@ -111,6 +111,7 @@ a.btn {
     display: flex;
     justify-content: flex-end; /* 양쪽 끝에 요소 정렬 *!*/
     align-items: center;
+    margin-top: 15;
 }
 
 .search {
@@ -274,6 +275,6 @@ input {
     
 }
 
-
-
-
+.th-1 {
+    border-top:  1px solid #dee2e6;
+}

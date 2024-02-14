@@ -37,14 +37,14 @@ const StoreList = () => {
     const handleEdit = (storeId) => {
         const storeName = prompt("상점 이름을 수정하세요:", "");
         if (storeName != null && storeName !== "") {
-          axios.post(`/stores/update?storeId=${storeId}`, {
-            store_name: storeName
+          axios.post(`http://localhost:8080/api/stores/update?storeId=${storeId}`, {
+            storeName: storeName
           }).then(response => {
             if (response.status === 200) {
 
                 const updatedStores = stores.map(store => {
                     if (store.storeId === storeId) {
-                      return { ...store, store_name: storeName };
+                      return { ...store, storeName: storeName };
                     }
                     return store;
                   });
@@ -64,13 +64,13 @@ const StoreList = () => {
       <Header />
       <BodyHeader />
       <SearchBox onSearch={handleSearch}/>
-      <div className="store-list">
+      <div className="store-list" style={{marginTop : '15px'}}>
         <table className="table mx-auto">
           <thead>
             <tr>
-              <th scope="col">번호</th>
-              <th scope="col">이름</th>
-              <th scope="col"></th>
+              <th className="th-1" scope="col">번호</th>
+              <th className="th-1">이름</th>
+              <th className="th-1"></th>
             </tr>
           </thead>
           <tbody>

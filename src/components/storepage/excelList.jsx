@@ -38,8 +38,8 @@ const ExcelDataList = () => {
       <table className="table table-striped" style={{marginTop : '15px'}}>
         <thead>
           <tr>
-            <th scope="col" style={{ borderTop: '1px solid #dee2e6' }}>번호</th>
-            <th scope="col" style={{ borderTop: '1px solid #dee2e6' }}>이름</th>
+            <th className="th-1" scope="col">번호</th>
+            <th className="th-1" scope="col">이름</th>
           </tr>
         </thead>
         <tbody>
