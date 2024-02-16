@@ -79,7 +79,8 @@ const StoreList = () => {
                 <td>{index + 1 + (page - 1) * 10}</td>
                 <td>{store.storeName}</td>
                 <td>
-                <button className="btn btn-primary edit_btn" onClick={() => handleEdit(store.storeId)}>수정</button>
+                <button className="btn btn-primary edit_btn" onClick={() => 
+                  handleEdit(store.storeId)}>수정</button>
                 </td>
               </tr>
             ))}
