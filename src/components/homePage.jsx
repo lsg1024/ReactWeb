@@ -27,7 +27,7 @@ function HomePage() {
             <Link to="/store/create/excel" className="btn btn-lg btn-secondary">가게 등록</Link>
           </p>
           <p>
-            <Link to="/user" className="btn btn-lg btn-secondary">사용자 관리</Link>
+            <Link to="/users" className="btn btn-lg btn-secondary">사용자 관리</Link>
           </p>
         </div>
       </div>
