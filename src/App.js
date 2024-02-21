@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HomePage from './components/homePage';
 import LoginPage from './components/loginpage/loginpage';
+import SignupPage from './components/loginpage/signuppage';
 import ProductPage from './components/productpage/product';
 import ProductDetail from './components/productpage/productDetail';
 import ExcelUpload from './components/storepage/excelLoadPage';
@@ -18,6 +19,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPage/>} />
         <Route path="/login" element={<LoginPage/>} />
+        <Route path="/user/signup" element={<SignupPage/>} />
         <Route path="/home" element={<HomePage/>} />
         <Route path="/product" element={<ProductPage/>} />
         <Route path="/product/detail/:productId" element={<ProductDetail/>} />

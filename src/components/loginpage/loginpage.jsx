@@ -27,7 +27,7 @@ const LoginPage = () => {
     .then(response => {
       const { status, data } = response;
       if (status === 200) {
-        alert(data.response);
+        alert(data.message);
         window.location.href = '/home';
       } 
     })
@@ -42,11 +42,19 @@ const LoginPage = () => {
           }
           alert(errorMessage);
         } 
-      } else {
+        else {
+          alert(error.response.data.message);
+        }
+      } 
+      else {
         alert('로그인 요청을 처리할 수 없습니다.');
       }
     });
   };
+
+  const kakaoLogin= () => {
+    window.location.href = "http://localhost:8080/oauth2/authorization/kakao";
+  }
 
   return (
     <div className="wrap">
@@ -62,8 +70,8 @@ const LoginPage = () => {
           <div className="signup_submit">
             <button type="submit" id="login_button">로그인</button>
           </div>
+          
         </form>
-
         <p style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '24px' }}>
           <Link to="/user/find_email" className="login_a">아이디(이메일) 찾기</Link>
           <span style={{ margin: '0 8px', width: '1px', height: '10px', backgroundColor: '#858a8d' }}></span>
@@ -76,7 +84,11 @@ const LoginPage = () => {
           <hr className="social-sign-in__line" style={{ position: 'relative', bottom: '-8px', display: 'block', margin: '0', width: '80%', height: '1px', backgroundColor: '#f1f3f5', border: 'none' }} />
           <span className="social-sign-in__title" style={{ padding: '0 8px', marginBottom: '16px', fontSize: '12px', lineHeight: '14px', letterSpacing: '-.3px', color: '#abb0b5', zIndex: '1', backgroundColor: '#fff' }}>간편로그인</span>
           <div className="login_sns">
-            <li><a style={{ background: '#FAE100' }} href="https://kauth.kakao.com/oauth/authorize?response_type=code&prompt=login&client_id=5491a6e9994ae64c2a5d4a132059656c&redirect_uri=http://localhost:3000/oauth/kakao"><img className="login_img" src={logoPath} alt="카카오 로그인" /></a></li>
+            <li>
+              <button style={{ background: '#FAE100' }}>
+              <img className="login_img" onClick={kakaoLogin} src={logoPath} alt="카카오 로그인" />
+              </button>
+            </li>
           </div>
         </div>
       </div>

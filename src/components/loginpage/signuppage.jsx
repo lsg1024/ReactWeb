@@ -1,5 +1,4 @@
 import React from 'react';
-import './login.css'; // CSS 파일 경로 확인 필요
 
 function SignupPage() {
   const handleSubmit = (event) => {

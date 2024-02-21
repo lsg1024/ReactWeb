@@ -53,12 +53,11 @@ const Users = () => {
                         <tbody>
                             {users.map((user, index) => (
                                 <tr key={index}>
-                                    <td>{index}</td>
+                                    <td>{index + 1}</td>
                                     <td>{user.userName}</td>
                                     <td>{user.userEmail}</td>
-                                    <td>{user.userRole}</td>
-                                    <td>{user.userChangeDay}</td>
-                                    
+                                    <td>{user.role}</td>
+                                    <td>{user.lastModifiedDate}</td>
                                 </tr>
                             ))}
                         </tbody>
