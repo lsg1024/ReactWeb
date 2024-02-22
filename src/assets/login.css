@@ -26,8 +26,8 @@ li {
 }
 
 .login {
-    width: 30%;
-    height: 600px;
+    width: 500px;
+    height: 550px;
     background: white;
     border-radius: 20px;
     display: flex;
@@ -131,6 +131,17 @@ h2 {
     padding: 10px;
 }
 
+.signup {
+    width: 500px;
+    height: 700px;
+    background: white;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
 .signup_login_id {
     margin-top: 20px;
 }
@@ -190,6 +201,13 @@ h2 {
     font-size: 1.2em;
     letter-spacing: 2px;
     font-weight: bold;
+}
+
+.box {
+    width: 50px;
+    height: 50px;
+    border-radius: 70%;
+    overflow: hidden;
 }
 
 

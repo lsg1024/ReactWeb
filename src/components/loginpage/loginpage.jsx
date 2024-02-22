@@ -8,7 +8,7 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault(); // 폼 제출 시 새로고침 방지
 
     const loginData = {
@@ -19,10 +19,11 @@ const LoginPage = () => {
     console.log("Request Data:", JSON.stringify(loginData));
 
     // 로그인 요청
-    axios.post('http://localhost:8080/user/login', loginData, {
+    await axios.post('http://localhost:8080/user/login', loginData, {
       headers: {
         'Content-Type': 'application/json'
       },
+      withCredentials: true
     })
     .then(response => {
       const { status, data } = response;
@@ -85,9 +86,9 @@ const LoginPage = () => {
           <span className="social-sign-in__title" style={{ padding: '0 8px', marginBottom: '16px', fontSize: '12px', lineHeight: '14px', letterSpacing: '-.3px', color: '#abb0b5', zIndex: '1', backgroundColor: '#fff' }}>간편로그인</span>
           <div className="login_sns">
             <li>
-              <button style={{ background: '#FAE100' }}>
-              <img className="login_img" onClick={kakaoLogin} src={logoPath} alt="카카오 로그인" />
-              </button>
+            <div className="box" style={{background: '#FAE100'}}>
+            <img className="login_img" onClick={kakaoLogin} src={logoPath} style={{ background: '#FAE100'}} alt="카카오 로그인" />
+            </div>
             </li>
           </div>
         </div>
