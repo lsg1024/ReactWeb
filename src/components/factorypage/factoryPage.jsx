@@ -17,11 +17,13 @@ const Factory = () => {
     }, [page, searchTerm]);
 
     const fetchFactory = (currentPage, searchQuery) => {
-        const url  = searchQuery
-        ? `http://localhost:8080/api/factory/search?factorySearch=${searchQuery}&page=${currentPage}`
-        : `http://localhost:8080/api/factory?page=${currentPage}`;
+        const url  = searchQuery = 
+        `http://localhost:8080/api/factory/search?factorySearch=${searchQuery}&page=${currentPage}`
+    
 
-        axios.get(url)
+        axios.get(url, {
+            withCredentials: true 
+            })
             .then(response => {
                 const {content, totalPages} = response.data;
                 setFactories(content);
@@ -38,7 +40,9 @@ const Factory = () => {
     const handleEdit = (factoryId) => {
         const factoryName = prompt("공장 이름을 수정하세요:", "");
         if (factoryName != null && factoryName !== "") {
-          axios.post(`http://localhost:8080/api/factory/update?factoryId=${factoryId}`, {
+          axios.post(
+            `http://localhost:8080/api/factory/update?factoryId=${factoryId}`, 
+          {allowCredentials: true}, {
             factoryName: factoryName
           }).then(response => {
             if (response.status === 200) {
