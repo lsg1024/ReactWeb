@@ -20,16 +20,19 @@ const Factory = () => {
         const url  = searchQuery = 
         `http://localhost:8080/api/factory/search?factorySearch=${searchQuery}&page=${currentPage}`
     
-
         axios.get(url, {
-            withCredentials: true 
-            })
-            .then(response => {
-                const {content, totalPages} = response.data;
-                setFactories(content);
-                setTotalPages(totalPages);
-            })
-            .catch(error => alert(error));
+            withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json',
+                // 필요한 경우 추가 헤더를 여기에 포함시킵니다.
+            }
+        })
+        .then(response => {
+            const {content, totalPages} = response.data;
+            setFactories(content);
+            setTotalPages(totalPages);
+        })
+        .catch(error => alert(error));
     };
 
     const handleSearch = (query) => {
