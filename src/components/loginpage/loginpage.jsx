@@ -8,7 +8,7 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = async (event) => {
+  const handleLogin = (event) => {
     event.preventDefault(); // 폼 제출 시 새로고침 방지
 
     const loginData = {
@@ -19,11 +19,10 @@ const LoginPage = () => {
     console.log("Request Data:", JSON.stringify(loginData));
 
     // 로그인 요청
-    await axios.post('http://localhost:8080/user/login', loginData, {
+    axios.post('http://localhost:8080/user/login', loginData, {
       headers: {
         'Content-Type': 'application/json'
       },
-      withCredentials: true
     })
     .then(response => {
       const { status, data } = response;

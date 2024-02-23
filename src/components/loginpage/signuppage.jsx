@@ -33,22 +33,12 @@ const SignupPage = () => {
         })
         .catch(error => {
           console.error('Error:', error);
-          if (error.response) {
-            const { status, data } = error.response;
-            if (status === 400 || status === 404) { 
-              let errorMessage = data.message + ": ";
-              for (const [, message] of Object.entries(data.errors)) {
-                errorMessage += `${message} `;
-              }
-              alert(errorMessage);
-            } 
-            else {
-              alert(error.response.data.message);
+            const { data } = error.response;
+            let errorMessage = "";
+            for (const [, errors] of Object.entries(data.errors)) {
+              errorMessage += `${errors} `;
             }
-          } 
-          else {
-            alert('회원가입 요청을 처리할 수 없습니다.');
-          }
+            alert(errorMessage);
         });
       };
 
