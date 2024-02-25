@@ -28,6 +28,7 @@ function App() {
         <Route path="/stores" element={<StorePage/>}/>
         <Route path="/factory" element={<Factoty/>}/>
         <Route path='/users' element={<Users/>}/>
+        <Route path='/product/create' element={<ExcelUpload/>}/>
       </Routes>
     </Router>
   );

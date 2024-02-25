@@ -20,13 +20,18 @@ const StoreList = () => {
             ? `http://localhost:8080/api/stores/search?storeSearch=${searchQuery}&page=${currentPage}`
             : `http://localhost:8080/api/stores?page=${currentPage}`;
 
-        axios.get(url)
-            .then(response => {
-                const {content, totalPages} = response.data;
-                setStores(content);
-                setTotalPages(totalPages);
-            })
-            .catch(error => alert(error));
+        axios.get(url, {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+        .then(response => {
+            const {content, totalPages} = response.data;
+            setStores(content);
+            setTotalPages(totalPages);
+        })
+        .catch(error => alert(error));
     };
 
     const handleSearch = (query) => {
@@ -37,21 +42,27 @@ const StoreList = () => {
     const handleEdit = (storeId) => {
         const storeName = prompt("상점 이름을 수정하세요:", "");
         if (storeName != null && storeName !== "") {
-          axios.post(`http://localhost:8080/api/stores/update?storeId=${storeId}`, {
-            storeName: storeName
-          }).then(response => {
-            if (response.status === 200) {
-
-                const updatedStores = stores.map(store => {
-                    if (store.storeId === storeId) {
-                      return { ...store, storeName: storeName };
-                    }
-                    return store;
-                  });
-                  setStores(updatedStores); // 상태 업데이트
-                  console.log("상점 이름이 성공적으로 수정되었습니다.");
-
+          axios.post(`http://localhost:8080/api/stores/update?storeId=${storeId}`,
+          { storeName: storeName }, 
+          {
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'application/json',
             }
+          })
+          .then(response => {
+          if (response.status === 200) {
+
+              const updatedStores = stores.map(store => {
+                  if (store.storeId === storeId) {
+                    return { ...store, storeName: storeName };
+                  }
+                  return store;
+                });
+                setStores(updatedStores); // 상태 업데이트
+                console.log("상점 이름이 성공적으로 수정되었습니다.");
+
+          }
           }).catch(error => {
             alert("상점 이름 수정에 실패했습니다.");
             console.error("Error:", error);

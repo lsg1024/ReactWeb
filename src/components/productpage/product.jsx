@@ -22,7 +22,12 @@ const Product = () => {
             ? `http://localhost:8080/api/product/search?productSearch=${searchQuery}&page=${currentPage}`
             : `http://localhost:8080/api/product?page=${currentPage}`;
 
-        axios.get(url)
+        axios.get(url, {
+            withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json',
+                }
+            })
             .then(response => {
                 const { content, totalPages } = response.data;
                 setProducts(content);

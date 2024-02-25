@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Header from '../fragment/header';
 import BodyHeader from '../fragment/bodyheader';
+import Pagination from '../Pagination';
+import SearchBox from '../searchBox';
 
 const Users = () => {
     const [users, setUsers] = useState([]);
@@ -20,13 +21,18 @@ const Users = () => {
             ? `http://localhost:8080/api/users/search?userSearch=${searchQuery}&page=${currentPage}`
             : `http://localhost:8080/api/users?page=${currentPage}`;
 
-        axios.get(url)
-            .then(response => {
-                const {content, totalPages} = response.data;
-                setUsers(content);
-                setTotalPages(totalPages);
-            })
-            .catch(error => alert(error));
+        axios.get(url, {
+            withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => {
+            const {content, totalPages} = response.data;
+            setUsers(content);
+            setTotalPages(totalPages);
+        })
+        .catch(error => alert(error));
     };
 
     const handleSearch = (query) => {
@@ -39,6 +45,7 @@ const Users = () => {
             <div className= "container">
                 <Header/>
                 <BodyHeader/>
+                <SearchBox onSearch={handleSearch}/>
                 <div className="store-list" style={{marginTop : '15px'}}>
                     <table className="table mx-auto">
                         <thead>
@@ -64,6 +71,7 @@ const Users = () => {
                     </table>
                 </div>
             </div>
+            <Pagination page={page} totalPages={totalPages} onPageChange={setPage}/>
         </div>
     )
 };

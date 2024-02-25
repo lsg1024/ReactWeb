@@ -15,9 +15,10 @@ const ExcelDataList = () => {
     try {
         // 서버에 데이터 저장 요청 보내기
         const response = await axios.post('http://localhost:8080/api/stores/save', datas, {
+          withCredentials: true,
           headers: {
             'Content-Type': 'application/json',
-          },
+          } 
         });
         console.log(response.data); // 서버 응답 출력
         alert('데이터가 성공적으로 저장되었습니다.'); // 사용자에게 성공 알림

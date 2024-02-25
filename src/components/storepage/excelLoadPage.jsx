@@ -19,9 +19,10 @@ const ExcelUpload = () => {
 
     try {
       const response = await axios.post('http://localhost:8080/api/excel/read', formData, {
+        withCredentials: true,  
         headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+            'Content-Type': 'multipart/form-data',
+          },
       });
       nav('/store/read', { state: {data :response.data }}); 
     } catch (error) {

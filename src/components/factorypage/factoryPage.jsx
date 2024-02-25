@@ -24,7 +24,6 @@ const Factory = () => {
             withCredentials: true,
             headers: {
                 'Content-Type': 'application/json',
-                // 필요한 경우 추가 헤더를 여기에 포함시킵니다.
             }
         })
         .then(response => {
