@@ -20,6 +20,7 @@ const LoginPage = () => {
 
     // 로그인 요청
     axios.post('http://localhost:8080/user/login', loginData, {
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json'
       },
