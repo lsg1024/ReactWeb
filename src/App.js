@@ -11,27 +11,30 @@ import ExcelDataList from './components/storepage/excelList';
 import StorePage from './components/storepage/storePage';
 import Factoty from './components/factorypage/factoryPage'
 import Users from './components/userpage/userpage';
+import { UserProvider } from './UserContext';
 // 다른 페이지 컴포넌트도 여기에 임포트
 
 function App() {
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<LoginPage/>} />
-        <Route path="/login" element={<LoginPage/>} />
-        <Route path="/user/signup" element={<SignupPage/>} />
-        <Route path="/home" element={<HomePage/>} />
-        <Route path="/product" element={<ProductPage/>} />
-        <Route path="/product/detail/:productId" element={<ProductDetail/>} />
-        <Route path="/store/create/excel" element={<ExcelUpload/>}/>
-        <Route path="/store/read" element={<ExcelDataList/>}/>
-        <Route path="/stores" element={<StorePage/>}/>
-        <Route path="/factory" element={<Factoty/>}/>
-        <Route path='/users' element={<Users/>}/>
-        <Route path='/product/create' element={<ExcelUpload/>}/>
-      </Routes>
-    </Router>
+    <UserProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<LoginPage/>} />
+          <Route path="/login" element={<LoginPage/>} />
+          <Route path="/user/signup" element={<SignupPage/>} />
+          <Route path="/home" element={<HomePage/>} />
+          <Route path="/product" element={<ProductPage/>} />
+          <Route path="/product/detail/:productId" element={<ProductDetail/>} />
+          <Route path="/store/create/excel" element={<ExcelUpload/>}/>
+          <Route path="/store/read" element={<ExcelDataList/>}/>
+          <Route path="/stores" element={<StorePage/>}/>
+          <Route path="/factory" element={<Factoty/>}/>
+          <Route path='/users' element={<Users/>}/>
+          <Route path='/product/create' element={<ExcelUpload/>}/>
+        </Routes>
+      </Router>
+    </UserProvider>
   );
 }
 

@@ -3,10 +3,14 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import '../../assets/login.css';
 import logoPath from '../../image/kakao_logo.png';
+import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../UserContext';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { setUser } = useUser();
+  const navigate = useNavigate();
 
   const handleLogin = (event) => {
     event.preventDefault(); // 폼 제출 시 새로고침 방지
@@ -29,7 +33,14 @@ const LoginPage = () => {
       const { status, data } = response;
       if (status === 200) {
         alert(data.message);
-        window.location.href = '/home';
+        axios.get('http://localhost:8080/userInfo', { withCredentials: true })
+          .then(response => {
+            const username = response.data.message;
+            const user = {name: username };
+            localStorage.setItem("user", JSON.stringify(username));
+            setUser(user);
+            navigate('/home');
+          })
       } 
     })
     .catch(error => {

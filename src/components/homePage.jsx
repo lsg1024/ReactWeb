@@ -7,6 +7,7 @@ import '../assets/jumbotron-narrow.css';
 import '../assets/style.css';
 
 function HomePage() {
+
   return (
     <div className="container">
       <Header/>
@@ -30,7 +31,7 @@ function HomePage() {
             <Link to="/users" className="btn btn-lg btn-secondary">사용자 관리</Link>
           </p>
         </div>
-      </div>
+      </div> 
       <Footer />
     </div>
   );
