@@ -35,10 +35,6 @@ const LoginPage = () => {
         alert(data.message);
         axios.get('http://localhost:8080/userInfo', { withCredentials: true })
           .then(response => {
-            const username = response.data.message;
-            const user = {name: username };
-            localStorage.setItem("user", JSON.stringify(username));
-            setUser(user);
             navigate('/home');
           })
       } 

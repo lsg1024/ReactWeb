@@ -8,18 +8,14 @@ function Header() {
   const username = user?.name;
 
   return (
-    <div className="header" style={{display: 'flex', justifyContent: 'space-between'}}>
+    <div className="header" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
       <Link to="/home">
-        <h3 className="text-muted" style={{textAlign: 'center'}}>PRODUCT HUB</h3>
+        <h3 className="text-muted">PRODUCT HUB</h3>
       </Link>
-      <div className='div-header' style={{backgroundColor: '#e9ecef', margin: '10px', padding: '10px'}}>
-        <div>
-          <p style={{padding: '5px'}}>사용자: {username}</p>
-        </div>
-        <div>
-          <buttom className='div-header-btn' type="submit">로그아웃</buttom>
-        </div>
-      </div>
+      <p style={{marginRight: '10px', marginTop: '10px'}}>
+        사용자: {username}
+      </p>
+      {/* <button className='div-header-btn' type="submit">로그아웃</button> */}
     </div>
   );
 }
