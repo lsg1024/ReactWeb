@@ -1,12 +1,48 @@
-import React from 'react';
+import React, {useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from './fragment/header';
 import Footer from './fragment/footer';
+import client from './client';
 import BodyHeader from './fragment/bodyheader';
 import '../assets/jumbotron-narrow.css';
 import '../assets/style.css';
+import { useUser } from '../UserContext';
 
-function HomePage() {
+const HomePage = () => {
+
+  const { setUser } = useUser();
+
+  useEffect(() => {
+
+    const accessFromCookie = getCookie("access");
+    console.log(accessFromCookie)
+
+    if (accessFromCookie) {
+      // 로컬 스토리지에 쿠키에서 가져온 access 토큰 저장
+      localStorage.setItem("access", accessFromCookie);
+      // 쿠키에서 access 토큰 삭제
+      document.cookie = 'access=; Max-age=-9999999; path=/;';
+
+      client.get('/userInfo', {
+        headers: {
+          'access': localStorage.getItem("access")
+        }
+      })
+      .then(response => {
+        const username = response.data.message;
+        const user = {name: username };
+        localStorage.setItem("user", username);
+        setUser(user);
+      })
+
+    }
+  });
+
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
 
   return (
     <div className="container">

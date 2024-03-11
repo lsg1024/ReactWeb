@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import client from '../client';
 import { Link } from 'react-router-dom';
 import '../../assets/login.css';
 import logoPath from '../../image/kakao_logo.png';
@@ -23,39 +23,40 @@ const LoginPage = () => {
     console.log("Request Data:", JSON.stringify(loginData));
 
     // 로그인 요청
-    axios.post('http://localhost:8080/user/login', loginData, {
-      withCredentials: true,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    })
+    client.post('/login', loginData)
     .then(response => {
-      const { status, data } = response;
+      console.log("response data = {}", response);
+      const { status, headers } = response;
       if (status === 200) {
-        alert(data.message);
-        axios.get('http://localhost:8080/userInfo', { withCredentials: true })
-          .then(response => {
-            const username = response.data.message;
-            const user = {name: username };
-            localStorage.setItem("user", JSON.stringify(username));
-            setUser(user);
-            navigate('/home');
-          })
+        alert("로그인 성공");
+        const accessToken = headers['access'];
+        console.log("acccessToken = {}", accessToken)
+        localStorage.setItem("access", accessToken);
+        navigate('/home');
+
+        client.get('/userInfo', {
+          headers: {
+            "access" : localStorage.getItem("access")
+          }
+        })
+        .then(response => {
+          const username = response.data.message;
+          const user = {name: username };
+          localStorage.setItem("user", username);
+          setUser(user);
+          navigate('/home');
+        })
       } 
     })
     .catch(error => {
       console.error('Error:', error);
       if (error.response) {
-        const { status, data } = error.response;
-        if (status === 400 || status === 404) { 
-          let errorMessage = data.message + ": ";
-          for (const [, message] of Object.entries(data.errors)) {
-            errorMessage += `${message} `;
-          }
-          alert(errorMessage);
-        } 
-        else {
+        const { status } = error.response;
+        if (status === 401) { 
           alert(error.response.data.message);
+        }
+        else {
+          alert("알 수 없는 에러")
         }
       } 
       else {

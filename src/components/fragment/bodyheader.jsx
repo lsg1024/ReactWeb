@@ -1,11 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useUser } from '../../UserContext';
 
 function Header() {
-  const { user } = useUser(); 
 
-  const username = user?.name;
+  const username = localStorage?.getItem("user");
 
   return (
     <div className="header" style={{display: 'flex', justifyContent: 'space-between'}}>

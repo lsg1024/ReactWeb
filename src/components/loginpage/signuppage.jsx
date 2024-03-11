@@ -19,7 +19,7 @@ const SignupPage = () => {
     };
 
 
-    await axios.post('http://localhost:8080/user/signup', signUpData, {
+    await axios.post('http://localhost:8080/signup', signUpData, {
           headers: {
             'Content-Type' : 'application/json'
           },
