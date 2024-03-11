@@ -17,8 +17,9 @@ const Factory = () => {
     }, [page, searchTerm]);
 
     const fetchFactory = (currentPage, searchQuery) => {
-        const url  = searchQuery = 
-        `http://localhost:8080/api/factory/search?factorySearch=${searchQuery}&page=${currentPage}`
+        const url  = searchQuery 
+        ? `http://localhost:8080/api/factory/search?factorySearch=${searchQuery}&page=${currentPage}`
+        : `http://localhost:8080/api/factory?page=${currentPage}`;
     
         axios.get(url, {
             withCredentials: true,
