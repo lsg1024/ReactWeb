@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import Header from '../fragment/header';
 import BodyHeader from '../fragment/bodyheader';
 import SearchBox from '../searchBox';
 import Pagination from '../Pagination';
+import client from '../client';
 
 
 const Product = () => {
@@ -12,37 +12,62 @@ const Product = () => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
+    const navigate = useNavigate();
 
-    useEffect(() => {
-        fetchProducts(page, searchTerm);
-    }, [page, searchTerm]); 
+    const reissueToken = useCallback(async () => {
+        try {
+            const response = await client.post('/reissue');
+            const { status, headers } = response;
+            if (status === 200) {
+                const accessToken = headers['access'];
+                localStorage.setItem("access", accessToken);
+            }
+        } catch (error) {
+            console.error('Error reissuing token:', error);
+            navigate('/');
+        }
+    }, [navigate]);
 
-    const fetchProducts = (currentPage, searchQuery) => {
-        const url = searchQuery
-            ? `http://localhost:8080/api/product/search?productSearch=${searchQuery}&page=${currentPage}`
-            : `http://localhost:8080/api/product?page=${currentPage}`;
+    const fetchProducts = useCallback(async (currentPage, searchQuery) => {
+        const url = searchQuery 
+        ? `/api/products/search?productSearch=${searchQuery}&page=${currentPage}` 
+        : `/api/products?page=${currentPage}`;
 
-        axios.get(url, {
-            withCredentials: true,
-            headers: {
-                'Content-Type': 'application/json',
+        try {
+            const response = await client.get(url, {
+                headers: {
+                    "access" : localStorage.getItem("access")
                 }
-            })
-            .then(response => {
+            });
+            if (response.status === 200) {
                 const { content, totalPages } = response.data;
                 setProducts(content);
                 setTotalPages(totalPages);
-            })
-            .catch(error => console.error('Error fetching products:', error));
-    };
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                // 액세스 토큰이 만료되었을 때
+                await reissueToken();
+                console.log("액세스 토큰 재발급")
+                fetchProducts(currentPage, searchQuery);
+                console.log("fetchProducts 재실행")
+            } else {
+                console.error('Error fetching products:', error);
+                alert('로그인 시간 만료');
+                navigate('/');
+            }
+        }
+    }, [reissueToken, navigate]);
+
+    useEffect(() => {
+        fetchProducts(page, searchTerm);
+    }, [fetchProducts, page, searchTerm]); 
+    
 
     const handleSearch = (query) => {
         setSearchTerm(query);
         setPage(1);
     };
-
-
-    const navigate = useNavigate();
     
     const goToProductDetail = (productId) => {
         navigate(`/product/detail/${productId}`);

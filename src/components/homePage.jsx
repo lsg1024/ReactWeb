@@ -14,35 +14,31 @@ const HomePage = () => {
 
   useEffect(() => {
 
-    const accessFromCookie = getCookie("access");
-    console.log(accessFromCookie)
+    const accessFromHeader = localStorage.getItem('access');
 
-    if (accessFromCookie) {
-      // 로컬 스토리지에 쿠키에서 가져온 access 토큰 저장
-      localStorage.setItem("access", accessFromCookie);
-      // 쿠키에서 access 토큰 삭제
-      document.cookie = 'access=; Max-age=-9999999; path=/;';
-
-      client.get('/userInfo', {
-        headers: {
-          'access': localStorage.getItem("access")
+    if (accessFromHeader === null) {
+      client.post('/reissue')
+      .then(response => {
+        const {status, headers} = response;
+        if (status === 200) {
+          const accessToken = headers['access'];
+          localStorage.setItem("access", accessToken);
+          client.get('/userInfo', {
+            headers: {
+              'access': localStorage.getItem("access")
+            }
+          })
+          .then(response => {
+            const username = response.data.message;
+            const user = {name: username };
+            localStorage.setItem("user", username);
+            setUser(user);
+          })
         }
       })
-      .then(response => {
-        const username = response.data.message;
-        const user = {name: username };
-        localStorage.setItem("user", username);
-        setUser(user);
-      })
-
     }
+    
   });
-
-  function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-  }
 
   return (
     <div className="container">
