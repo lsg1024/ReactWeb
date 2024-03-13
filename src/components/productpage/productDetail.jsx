@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import Header from '../fragment/header';
 import BodyHeader from '../fragment/bodyheader';
 import notImage from '../../image/not_ready.png'
+import client from '../client';
 
 const ProductDetail = () => {
   const { productId } = useParams(); // URL에서 productId 파라미터를 추출
@@ -12,20 +13,27 @@ const ProductDetail = () => {
     size: '',
     weight: '',
     other: '',
-    image: '', // 이미지 상태도 관리가 필요하다면 추가
+    image: '',
   });
+  
   const [isEditing, setIsEditing] = useState(false);
 
 //수정 URL
   useEffect(() => {
-    fetch(`http://localhost:8080/api/product/detail/${productId}`) 
-      .then(response => response.json())
-      .then(data => setProduct(data))
+    client.get(`/product/detail/${productId}`, {
+      headers: {
+        'access' : localStorage.getItem('access')
+      }
+    })
+      .then(response => {
+        setProduct(response.data)
+      })
       .catch(error => console.error("There was an error!", error));
   }, [productId]); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    console.log(name);
     setProduct(prevState => ({ ...prevState, [name]: value }));
   };
 
@@ -38,25 +46,22 @@ const ProductDetail = () => {
 
     console.log("Request Data:", JSON.stringify(product));
 
-    fetch('http://localhost:8080/product/update', {
-      method: 'POST',
+    client.post('/product/update', product, {
       headers: {
-        'Content-Type': 'application/json',
-        'userId' : '1',
-        'factoryId' : '1' ,
-        'productId' : productId
+        'access' : localStorage.getItem('access'),
+        'userId': '1',
+        'factoryId': '1',
+        'productId': productId
       },
-      body: JSON.stringify(product),
     })
-    .then(response => response.json().then(data => ({ status: response.status, body: data })))
-    .then(({ status, body }) => {
+    .then(({ data, status }) => {
       if (status === 200) {
         alert("데이터 수정이 완료되었습니다");
         setIsEditing(false); // 수정 모드 해제
       } else {
         // 오류 처리
-        let errorMessage = body.message + ": ";
-        Object.values(body.errors).forEach(message => {
+        let errorMessage = data.message + ": ";
+        Object.values(data.errors).forEach(message => {
           errorMessage += `${message}, `;
         });
         alert(errorMessage);

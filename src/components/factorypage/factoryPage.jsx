@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect, useCallback } from 'react';
 import Header from '../fragment/header';
 import BodyHeader from '../fragment/bodyheader';
 import SearchBox from '../searchBox';
 import Pagination from '../Pagination';
+import client from '../client';
+import { useNavigate } from 'react-router-dom';
 
 
 const Factory = () => {
@@ -11,20 +12,30 @@ const Factory = () => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
+    const navigate = useNavigate();
 
-    useEffect(() => {
-        fetchFactory(page, searchTerm);
-    }, [page, searchTerm]);
+    const reissueToken = useCallback(async () => {
+        try {
+            const response = await client.post('/reissue');
+            const { status, headers } = response;
+            if (status === 200) {
+                const accessToken = headers['access'];
+                localStorage.setItem("access", accessToken);
+            }
+        } catch (error) {
+            console.error('Error reissuing token:', error);
+            navigate('/');
+        }
+    }, [navigate]);
 
-    const fetchFactory = (currentPage, searchQuery) => {
+    const fetchFactory = useCallback(async (currentPage, searchQuery) => {
         const url  = searchQuery 
-        ? `http://localhost:8080/api/factory/search?factorySearch=${searchQuery}&page=${currentPage}`
-        : `http://localhost:8080/api/factory?page=${currentPage}`;
+        ? `/api/factory/search?factorySearch=${searchQuery}&page=${currentPage}`
+        : `/api/factory?page=${currentPage}`;
     
-        axios.get(url, {
-            withCredentials: true,
+        await client.get(url, {
             headers: {
-                'Content-Type': 'application/json',
+                "access" : localStorage.getItem("access")
             }
         })
         .then(response => {
@@ -32,38 +43,64 @@ const Factory = () => {
             setFactories(content);
             setTotalPages(totalPages);
         })
-        .catch(error => alert(error));
-    };
+        .catch(async error => {
+            if (error.response && error.response.status === 401) {
+                // 액세스 토큰이 만료되었을 때
+                await reissueToken();
+                console.log("액세스 토큰 재발급")
+            
+            } else {
+                console.error('Error fetching products:', error);
+                alert('로그인 시간 만료');
+                navigate('/');
+            }
+        });
+    }, [reissueToken, navigate]);
+
+    useEffect(() => {
+        fetchFactory(page, searchTerm);
+    }, [fetchFactory, page, searchTerm]);
 
     const handleSearch = (query) => {
         setSearchTerm(query);
         setPage(1);
     };
     
-    const handleEdit = (factoryId) => {
+    const handleEdit = async (factoryId) => {
         const factoryName = prompt("공장 이름을 수정하세요:", "");
         if (factoryName != null && factoryName !== "") {
-          axios.post(
-            `http://localhost:8080/api/factory/update?factoryId=${factoryId}`, 
-          {allowCredentials: true}, {
-            factoryName: factoryName
-          }).then(response => {
-            if (response.status === 200) {
+            await client.post(`/api/factory/update?factoryId=${factoryId}`, 
+            {
+                factoryId: factoryId,
+                factoryName: factoryName 
+            },
+            {
+                headers: {"access" : localStorage.getItem("access")}}, 
+            ).then(response => {
+                if (response.status === 200) {
 
-                const updatedFactories = factories.map(factory => {
-                    if (factory.factoryId === factoryId) {
-                      return { ...factory, factoryName: factoryName };
-                    }
-                    return factory;
-                  });
-                  setFactories(updatedFactories); // 상태 업데이트
-                  console.log("공장 이름이 성공적으로 수정되었습니다.");
+                    const updatedFactories = factories.map(factory => {
+                        if (factory.factoryId === factoryId) {
+                        return { ...factory, factoryName: factoryName };
+                        }
+                        return factory;
+                    });
+                    setFactories(updatedFactories); // 상태 업데이트
+                    console.log("공장 이름이 성공적으로 수정되었습니다.");
 
-            }
-          }).catch(error => {
-            alert("공장 이름 수정에 실패했습니다.");
-            console.error("Error:", error);
-          });
+                }
+            }).catch(async error => {
+                if (error.response && error.response.status === 401) {
+                    // 액세스 토큰이 만료되었을 때
+                    await reissueToken();
+                    console.log("액세스 토큰 재발급")
+                
+                } else {
+                    console.error('Error fetching products:', error);
+                    alert('로그인 시간 만료');
+                    navigate('/');
+                }
+            });
         }
       };
 

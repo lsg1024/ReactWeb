@@ -30,7 +30,7 @@ const LoginPage = () => {
       if (status === 200) {
         alert("로그인 성공");
         const accessToken = headers['access'];
-        console.log("acccessToken = {}", accessToken)
+    
         localStorage.setItem("access", accessToken);
         navigate('/home');
 

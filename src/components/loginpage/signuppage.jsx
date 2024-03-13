@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import client from '../client';
+import { useNavigate } from 'react-router-dom';
 
 const SignupPage = () => {
 
@@ -7,6 +8,7 @@ const SignupPage = () => {
   const [password, setPassword] = useState('');
   const [password_confirm, setpasswordConfirm] = useState('');
   const [name, setname] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -19,16 +21,12 @@ const SignupPage = () => {
     };
 
 
-    await axios.post('http://localhost:8080/signup', signUpData, {
-          headers: {
-            'Content-Type' : 'application/json'
-          },
-        })
+    await client.post('/signup', signUpData)
         .then(response => {
           const {status, data } = response;
           if (status === 200) {
             alert(data.message);
-            window.location.href = '/';
+            navigate('/');
           }
         })
         .catch(error => {

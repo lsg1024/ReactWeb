@@ -30,8 +30,8 @@ const Product = () => {
 
     const fetchProducts = useCallback(async (currentPage, searchQuery) => {
         const url = searchQuery 
-        ? `/api/products/search?productSearch=${searchQuery}&page=${currentPage}` 
-        : `/api/products?page=${currentPage}`;
+        ? `/products/search?productSearch=${searchQuery}&page=${currentPage}` 
+        : `/products?page=${currentPage}`;
 
         try {
             const response = await client.get(url, {
@@ -53,7 +53,6 @@ const Product = () => {
                 console.log("fetchProducts 재실행")
             } else {
                 console.error('Error fetching products:', error);
-                alert('로그인 시간 만료');
                 navigate('/');
             }
         }

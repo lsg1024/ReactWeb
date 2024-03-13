@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Header from './fragment/header';
 import Footer from './fragment/footer';
 import client from './client';
+import { useNavigate } from 'react-router-dom';
 import BodyHeader from './fragment/bodyheader';
 import '../assets/jumbotron-narrow.css';
 import '../assets/style.css';
@@ -11,6 +12,7 @@ import { useUser } from '../UserContext';
 const HomePage = () => {
 
   const { setUser } = useUser();
+  const navigate = useNavigate();
 
   useEffect(() => {
 
@@ -35,6 +37,9 @@ const HomePage = () => {
             setUser(user);
           })
         }
+      })
+      .catch(() => {
+        navigate("/")
       })
     }
     
