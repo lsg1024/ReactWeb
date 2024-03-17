@@ -5,6 +5,15 @@ import BodyHeader from '../fragment/bodyheader';
 import notImage from '../../image/not_ready.png'
 import client from '../client';
 import { useNavigate } from 'react-router-dom';
+import Slider from 'react-slick'; 
+import "../../assets/slick/slick.css"
+import "../../assets/slick/slick-theme.css"
+import {NextTo, Prev} from '../../assets/style';
+import camera from '../../image/fill_camera.svg'
+
+import image1 from '../../image/khan.webp';
+import image2 from '../../image/khan.webp';
+import image3 from '../../image/khan.webp';
 
 const ProductDetail = () => {
   const { productId } = useParams(); // URL에서 productId 파라미터를 추출
@@ -14,16 +23,61 @@ const ProductDetail = () => {
     size: '',
     weight: '',
     other: '',
-    image: '',
+    image: [],
     factoryId: '',
     factoryName: ''
   });
+
   const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
+  const [uploadedImages, setUploadedImages] = useState([
+    image1,
+    image2,
+    image3
+  ]);
+  
+  const SlickButtonFix = ({ children, ...props }) => (
+    <span {...props}>{children}</span>
+  );
+
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: true,
+    fade: true,
+    nextArrow: (
+      <SlickButtonFix>
+        <NextTo />
+      </SlickButtonFix>
+    ),
+    prevArrow: (
+      <SlickButtonFix>
+        <Prev />
+      </SlickButtonFix>
+    )
+  };
+
+  const handleImageUpload = (e) => {
+    const files = e.target.files;
+    if (files && files[0]) {
+      const fileArray = Array.from(files).map(file => URL.createObjectURL(file));
+      setUploadedImages([...uploadedImages, ...fileArray]);
+      
+    }
+  };
+
+  const removeUploadedImage = (imageToRemove) => {
+    setUploadedImages(uploadedImages.filter(image => image !== imageToRemove));
+  };
+
 
   const handleSave = (e) => {
     e.preventDefault();
     updateProduct(); 
+    setIsEditing(false);
   };
 
   const handleChange = (e) => {
@@ -54,6 +108,7 @@ const ProductDetail = () => {
     fetchProductDetails();
   }, [productId]);
 
+  //토큰 리프레쉬
   const reissueToken = useCallback(async () => {
     try {
       const response = await client.post('/reissue');
@@ -69,6 +124,7 @@ const ProductDetail = () => {
 
   const updateProduct = useCallback(async () => {
     try {
+
       const { data, status } = await client.post('/product/update', product, {
         headers: {
           'access': localStorage.getItem('access'),
@@ -91,14 +147,50 @@ const ProductDetail = () => {
       }
     }
   }, [product, productId, reissueToken]);
+  
 
   return (
     <div className="container">
-        <Header/>
-        <BodyHeader />
+      <Header/>
+      <BodyHeader/>
  
-      <div style={{textAlign : 'center', marginTop: '50px'}}>
-        <img src={product.image || notImage} alt="Product" className="product-image" />
+      <div className="slick-slider" style={{ textAlign: 'center', marginTop: '50px' }}>
+        {uploadedImages.length > 0 ? (
+          <Slider {...sliderSettings}>
+            {uploadedImages.map((imgUrl, index) => (
+              <div key={index}>
+                <img src={imgUrl} alt={`Uploaded ${index + 1}`} />
+                <button onClick={() => removeUploadedImage(imgUrl)}>Remove</button>
+              </div>
+            ))}
+          </Slider>
+        ) : (product.image && product.image.length > 0) ? ( // 여기서 product.image가 정의되었는지 확인
+          <Slider {...sliderSettings}>
+            {product.image.map((imgUrl, index) => (
+              <div key={index}>
+                <img src={imgUrl} alt={`Product ${index + 1}`} />
+              </div>
+            ))}
+          </Slider>
+        ) : (
+          <img src={notImage} alt="Product" className="product-image" />
+        )}
+        {/* 이미지 업로드 버튼. isEditing이 true일 때만 렌더링 */}
+      {isEditing && (
+        <div className="file-upload-wrapper">
+          <input
+            type="file"
+            className="file-upload-input"
+            accept="image/*"
+            multiple
+            onChange={handleImageUpload}
+            id="file-upload"
+          />
+          <label htmlFor="file-upload" className="file-upload-button">
+            <img src={camera} alt=''></img>
+          </label>
+        </div>
+      )}
       </div>
 
       <form onSubmit={handleSave} style={{ marginTop: '50px' }}>
