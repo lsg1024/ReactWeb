@@ -9,11 +9,9 @@ import Slider from 'react-slick';
 import "../../assets/slick/slick.css"
 import "../../assets/slick/slick-theme.css"
 import {NextTo, Prev} from '../../assets/style';
-import camera from '../../image/fill_camera.svg'
-
-import image1 from '../../image/khan.webp';
-import image2 from '../../image/khan.webp';
-import image3 from '../../image/khan.webp';
+import camera from '../../image/fill_camera.svg';
+import searchImage from '../../image/search.png';
+import FactorySearchModal from '../factorypage/factorySearchModal';
 
 const ProductDetail = () => {
   const { productId } = useParams(); // URL에서 productId 파라미터를 추출
@@ -30,11 +28,9 @@ const ProductDetail = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
-  const [uploadedImages, setUploadedImages] = useState([
-    image1,
-    image2,
-    image3
-  ]);
+  const [uploadedImages, setUploadedImages] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   
   const SlickButtonFix = ({ children, ...props }) => (
     <span {...props}>{children}</span>
@@ -62,15 +58,17 @@ const ProductDetail = () => {
 
   const handleImageUpload = (e) => {
     const files = e.target.files;
-    if (files && files[0]) {
-      const fileArray = Array.from(files).map(file => URL.createObjectURL(file));
-      setUploadedImages([...uploadedImages, ...fileArray]);
-      
+    if (files && files.length > 0) {
+      setUploadedImages([...uploadedImages, ...Array.from(files)]);
     }
   };
 
   const removeUploadedImage = (imageToRemove) => {
     setUploadedImages(uploadedImages.filter(image => image !== imageToRemove));
+  };
+
+  const handleSearchIconClick = () => {
+    setIsModalOpen(true); // 모달 열기
   };
 
 
@@ -125,10 +123,31 @@ const ProductDetail = () => {
   const updateProduct = useCallback(async () => {
     try {
 
-      const { data, status } = await client.post('/product/update', product, {
+      const formData = new FormData();
+      formData.append("product", JSON.stringify({
+        name: product.name,
+        color: product.color,
+        size: product.size,
+        weight: product.weight,
+        other: product.other,
+        factoryId : product.factoryId,
+        factoryName: product.factoryName
+      }));
+
+      uploadedImages.forEach((files, index) => {
+        formData.append(`images`, files); // 수정 필요: 실제 파일 객체로 변경해야 합니다.
+      });
+
+        // FormData 내의 모든 값 확인
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}: `, value);
+        
+      }
+      const { data, status } = await client.post('/product/update', formData, {
         headers: {
           'access': localStorage.getItem('access'),
-          'productId': productId
+          'productId': productId,
+          'Content-Type': 'multipart/form-data'
         },
       });
       if (status === 200) {
@@ -146,8 +165,31 @@ const ProductDetail = () => {
         alert("업데이트 실패 : " + error.message);
       }
     }
-  }, [product, productId, reissueToken]);
+  }, [product, productId, reissueToken, uploadedImages]);
   
+  useEffect(() => {
+    // product 상태가 업데이트되면 factoryInfo도 업데이트
+    setFactoryInfo({
+      factoryId: product.factoryId,
+      factoryName: product.factoryName
+    });
+  }, [product]);
+
+  const [factoryInfo, setFactoryInfo] = useState({ 
+    factoryId: product.factoryId, 
+    factoryName: product.factoryName
+  });
+
+  // FactorySearchModal에서 공장이 선택되었을 때 호출될 함수
+  const handleFactorySelect = (factory) => {
+    setProduct((prevProduct) => ({
+      ...prevProduct,
+      factoryId: factory.id,
+      factoryName: factory.factoryName
+    }));
+    setFactoryInfo({ factoryId: factory.id, factoryName: factory.factoryName });
+  };
+
 
   return (
     <div className="container">
@@ -159,12 +201,12 @@ const ProductDetail = () => {
           <Slider {...sliderSettings}>
             {uploadedImages.map((imgUrl, index) => (
               <div key={index}>
-                <img src={imgUrl} alt={`Uploaded ${index + 1}`} />
+                <img src={URL.createObjectURL(imgUrl)} alt={`Uploaded ${index + 1}`} />
                 <button onClick={() => removeUploadedImage(imgUrl)}>Remove</button>
               </div>
             ))}
           </Slider>
-        ) : (product.image && product.image.length > 0) ? ( // 여기서 product.image가 정의되었는지 확인
+        ) : (product.image && product.image.length > 0) ? (
           <Slider {...sliderSettings}>
             {product.image.map((imgUrl, index) => (
               <div key={index}>
@@ -176,21 +218,21 @@ const ProductDetail = () => {
           <img src={notImage} alt="Product" className="product-image" />
         )}
         {/* 이미지 업로드 버튼. isEditing이 true일 때만 렌더링 */}
-      {isEditing && (
-        <div className="file-upload-wrapper">
-          <input
-            type="file"
-            className="file-upload-input"
-            accept="image/*"
-            multiple
-            onChange={handleImageUpload}
-            id="file-upload"
-          />
-          <label htmlFor="file-upload" className="file-upload-button">
-            <img src={camera} alt=''></img>
-          </label>
-        </div>
-      )}
+        {isEditing && (
+          <div className="file-upload-wrapper">
+            <input
+              type="file"
+              className="file-upload-input"
+              accept="image/*"
+              multiple
+              onChange={handleImageUpload}
+              id="file-upload"
+            />
+            <label htmlFor="file-upload" className="file-upload-button">
+              <img src={camera} alt=''></img>
+            </label>
+          </div>
+        )}
       </div>
 
       <form onSubmit={handleSave} style={{ marginTop: '50px' }}>
@@ -198,8 +240,23 @@ const ProductDetail = () => {
           {/* 공장 */}
           <div className="form-group" style={{marginBottom : '5px'}}>
             <label htmlFor="name">공장</label>
-            <input type="text" id="name" name="name" value={product.factoryName} onChange={handleChange} disabled={!isEditing} className="form-control" placeholder="상품명을 입력하세요" />
+            <div className='factory-form-group'>
+              <input
+              type="text"
+              id="name" 
+              name="name" 
+              value={factoryInfo.factoryName} 
+              onChange={handleChange} 
+              disabled={!isEditing} 
+              className="form-control" 
+              placeholder="상품명을 입력하세요"
+              readOnly
+            />
+            <img src={searchImage} alt="Search" className="search-icon" hidden={!isEditing} onClick={handleSearchIconClick} />
+            <FactorySearchModal isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)} onFactorySelect={handleFactorySelect}/>
+            </div>
           </div>
+          
           {/* 상품명 */}
           <div className="form-group" style={{marginBottom : '5px'}}>
             <label htmlFor="name">상품명</label>

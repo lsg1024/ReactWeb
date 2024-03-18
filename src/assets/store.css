@@ -30,6 +30,8 @@
 .store-list{
     display: flex;
     flex-wrap: wrap;
+    flex-grow: 1;
+    overflow: auto;
     justify-content: space-around ;
     align-items: center;
     gap: 10px;

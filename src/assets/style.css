@@ -309,6 +309,25 @@ input {
     max-width: 50%;
 }
 
+.factory-form-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    max-width: 100%;
+}
+
+.form-control {
+    padding-right: 30px; /* 검색 아이콘을 위한 공간 확보 */
+  }
+  
+  .search-icon {
+    position: absolute;
+    right: 10px; /* 입력 필드 내부 오른쪽 여백 */
+    cursor: pointer;
+    width: 20px; /* 아이콘 크기 조정 */
+    height: 20px;
+  }
+
 /* 반응형 디자인을 위해 미디어 쿼리 사용 가능 */
 @media (max-width: 768px) {
     .form-group {
@@ -374,3 +393,42 @@ display: none; /* input 타입을 숨깁니다 */
     justify-content: center;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
+
+.search-group .input-group {
+    display: flex;
+    align-items: center;
+  }
+  
+  .search-icon {
+    margin-left: 10px;
+    cursor: pointer;
+    width: 20px; /* 검색 아이콘의 크기를 조정하려면 여기 값을 변경하세요. */
+    height: auto;
+  }
+
+  @media (min-width: 900px) {
+    .model {
+        max-width: 50vw;
+    }
+}
+  .model {
+    position:fixed;
+    height: 100%;
+    top: 50%;
+    left: 50%;
+    width: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid rgb(204, 204, 204);
+    background: rgb(255, 255, 255);
+    overflow: auto;
+    border-radius: 4px;
+    outline: none;
+    padding: 20px;
+    max-height: calc(100% - 80px); /* 화면 크기에 따라 최대 높이 조정 */
+  }
+
+  .model .container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
