@@ -71,6 +71,15 @@ const ProductDetail = () => {
     setIsModalOpen(true); // 모달 열기
   };
 
+  // FactorySearchModal에서 공장이 선택되었을 때 호출될 함수
+  const handleFactorySelect = (factory) => {
+    setProduct((prevProduct) => ({
+      ...prevProduct,
+      factoryId: factory.factoryId,
+      factoryName: factory.factoryName
+    }));
+    setIsModalOpen(false);
+  };
 
   const handleSave = (e) => {
     e.preventDefault();
@@ -80,7 +89,6 @@ const ProductDetail = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log(name);
     setProduct(prevState => ({ ...prevState, [name]: value }));
   };
 
@@ -131,7 +139,6 @@ const ProductDetail = () => {
         weight: product.weight,
         other: product.other,
         factoryId : product.factoryId,
-        factoryName: product.factoryName
       }));
 
       uploadedImages.forEach((files, index) => {
@@ -166,30 +173,6 @@ const ProductDetail = () => {
       }
     }
   }, [product, productId, reissueToken, uploadedImages]);
-  
-  useEffect(() => {
-    // product 상태가 업데이트되면 factoryInfo도 업데이트
-    setFactoryInfo({
-      factoryId: product.factoryId,
-      factoryName: product.factoryName
-    });
-  }, [product]);
-
-  const [factoryInfo, setFactoryInfo] = useState({ 
-    factoryId: product.factoryId, 
-    factoryName: product.factoryName
-  });
-
-  // FactorySearchModal에서 공장이 선택되었을 때 호출될 함수
-  const handleFactorySelect = (factory) => {
-    setProduct((prevProduct) => ({
-      ...prevProduct,
-      factoryId: factory.id,
-      factoryName: factory.factoryName
-    }));
-    setFactoryInfo({ factoryId: factory.id, factoryName: factory.factoryName });
-  };
-
 
   return (
     <div className="container">
@@ -245,7 +228,7 @@ const ProductDetail = () => {
               type="text"
               id="name" 
               name="name" 
-              value={factoryInfo.factoryName} 
+              value={product.factoryName} 
               onChange={handleChange} 
               disabled={!isEditing} 
               className="form-control" 
