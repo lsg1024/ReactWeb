@@ -13,7 +13,7 @@ const FactorySearchModal = ({ isOpen, onRequestClose, onFactorySelect }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
 
-    const reissueToken = useCallback(async () => {
+    const reissueToken = useCallback(async (callback) => {
         try {
             const response = await client.post('/reissue');
             const { status, headers } = response;
@@ -45,9 +45,8 @@ const FactorySearchModal = ({ isOpen, onRequestClose, onFactorySelect }) => {
         .catch(async error => {
             if (error.response && error.response.status === 401) {
                 // 액세스 토큰이 만료되었을 때
-                await reissueToken();
+                await reissueToken(fetchFactory());
                 console.log("액세스 토큰 재발급")
-            
             } else {
                 console.error('Error fetching products:', error);
                 alert('로그인 시간 만료');

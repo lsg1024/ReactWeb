@@ -59,6 +59,11 @@ const ProductDetail = () => {
   const handleImageUpload = (e) => {
     const files = e.target.files;
     if (files && files.length > 0) {
+      Array.from(files).forEach(file => {
+        console.log(`File Name: ${file.name}`);
+        console.log(`File Type: ${file.type}`);
+        console.log(`File Size: ${file.size} bytes`);
+    });
       setUploadedImages([...uploadedImages, ...Array.from(files)]);
     }
   };
@@ -96,26 +101,8 @@ const ProductDetail = () => {
     setIsEditing(true);
   };
 
-//수정 URL
-  useEffect(() => {
-    const fetchProductDetails = async () => {
-      try {
-        const response = await client.get(`/product/detail/${productId}`, {
-          headers: {
-            'access': localStorage.getItem('access')
-          }
-        });
-        setProduct(response.data);
-      } catch (error) {
-
-      }
-    };
-
-    fetchProductDetails();
-  }, [productId]);
-
   //토큰 리프레쉬
-  const reissueToken = useCallback(async () => {
+  const reissueToken = useCallback(async (callback) => {
     try {
       const response = await client.post('/reissue');
       const { status, headers } = response;
@@ -127,6 +114,25 @@ const ProductDetail = () => {
       navigate('/');
     }
   }, [navigate]);
+
+  //수정 URL
+  useEffect(() => {
+    const fetchProductDetails = async () => {
+      try {
+        const response = await client.get(`/product/detail/${productId}`, {
+          headers: {
+            'access': localStorage.getItem('access')
+          }
+        });
+        setProduct(response.data);
+      } catch (error) {
+        await reissueToken();
+        fetchProductDetails();
+      }
+    };
+
+    fetchProductDetails();
+  }, [productId, reissueToken]);
 
   const updateProduct = useCallback(async () => {
     try {
@@ -141,9 +147,16 @@ const ProductDetail = () => {
         factoryId : product.factoryId,
       }));
 
-      uploadedImages.forEach((files, index) => {
-        formData.append(`images`, files); // 수정 필요: 실제 파일 객체로 변경해야 합니다.
-      });
+      // 이미지가 있을 경우에만 FormData에 추가
+      if (uploadedImages.length > 0) {
+        uploadedImages.forEach((file, index) => {
+            formData.append(`images[${index}]`, file);
+        });
+      } else {
+        // 이미지가 없음을 명시적으로 표시하는 경우
+        // 서버 측에서 'noImages' 파라미터를 처리할 수 있는 로직이 필요합니다.
+        formData.append('images', null);
+      }
 
         // FormData 내의 모든 값 확인
       for (let [key, value] of formData.entries()) {

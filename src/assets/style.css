@@ -69,9 +69,10 @@ a.btn {
 
 /* product 아이템 리스트 */
 .container {
-    max-width: 600px; /* 최대 너비 제한 없음 */
-    min-height: 80vh; /* 전체 뷰포트 높이의 60% */
-    align-content: center;
+    max-width: 700px;
+    min-height: 60vh; /* 전체 뷰포트 높이의 60% */
+    display: flex;
+    flex-direction: column;
  }
 .product-list {
     display: flex;

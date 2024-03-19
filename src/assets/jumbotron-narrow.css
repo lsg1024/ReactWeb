@@ -39,7 +39,7 @@ body {
 /* Customize container */
 @media (min-width: 900px) {
     .container {
-        max-width: 80vw;
+        max-width: 60vw;
     }
 }
 .container-narrow > hr {
@@ -87,6 +87,6 @@ body {
     }
     /* Remove the bottom border on the jumbotron for visual effect */
     .jumbotron {
-        min-height: 70vh; /* 화면 높이의 50% */
+        min-height: 60vh; /* 화면 높이의 50% */
     }
 }

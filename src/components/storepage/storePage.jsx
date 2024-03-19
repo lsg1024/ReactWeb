@@ -1,55 +1,77 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect, useCallback } from 'react';
 import Header from '../fragment/header';
 import BodyHeader from '../fragment/bodyheader';
 import Pagination from '../Pagination';
 import SearchBox from '../searchBox';
+import client from '../client';
+import { useNavigate } from 'react-router-dom';
 
 const StoreList = () => {
   const [stores, setStores] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
+
+  //토큰 리프레쉬
+  const reissueToken = useCallback(async (callback) => {
+    try {
+      const response = await client.post('/reissue');
+      const { status, headers } = response;
+      if (status === 200) {
+        const accessToken = headers['access'];
+        localStorage.setItem("access", accessToken);
+      }
+    } catch (error) {
+      navigate('/');
+    }
+  }, [navigate]);
+  
+  const fetchStores = useCallback(async(currentPage, searchQuery)  => {
+    const url = searchQuery
+        ? `/stores/search?storeSearch=${searchQuery}&page=${currentPage}`
+        : `/stores?page=${currentPage}`;
+
+    await client.get(url, {
+      headers: {
+        'access' : localStorage.getItem("access")
+      }
+    })
+    .then(response => {
+        const {content, totalPages} = response.data;
+        setStores(content);
+        setTotalPages(totalPages);
+    })
+    .catch(async error => {
+      if (error.response && error.response.status === 401) {
+          // 액세스 토큰이 만료되었을 때
+          await reissueToken();
+          console.log("액세스 토큰 재발급")
+          fetchStores();
+      
+      } else {
+          console.error('Error fetching factory:', error);
+          alert('로그인 시간 만료');
+          navigate('/');
+      }
+    });
+  }, [reissueToken, navigate]);
 
   useEffect(() => {
         fetchStores(page, searchTerm);
-    }, [page, searchTerm]);
-
-    const fetchStores = (currentPage, searchQuery)  => {
-        const url = searchQuery
-            ? `http://localhost:8080/api/stores/search?storeSearch=${searchQuery}&page=${currentPage}`
-            : `http://localhost:8080/api/stores?page=${currentPage}`;
-
-        axios.get(url, {
-          withCredentials: true,
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        })
-        .then(response => {
-            const {content, totalPages} = response.data;
-            setStores(content);
-            setTotalPages(totalPages);
-        })
-        .catch(error => alert(error));
-    };
+    }, [fetchStores, page, searchTerm]);
 
     const handleSearch = (query) => {
         setSearchTerm(query);
         setPage(1);
     };
     
-    const handleEdit = (storeId) => {
+    const handleEdit = async (storeId) => {
         const storeName = prompt("상점 이름을 수정하세요:", "");
         if (storeName != null && storeName !== "") {
-          axios.post(`http://localhost:8080/api/stores/update?storeId=${storeId}`,
+          await client.post(`/stores/update?storeId=${storeId}`,
           { storeName: storeName }, 
-          {
-            withCredentials: true,
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          })
+          { headers: {'access' : localStorage.getItem("access")} })
           .then(response => {
           if (response.status === 200) {
 
@@ -63,9 +85,19 @@ const StoreList = () => {
                 console.log("상점 이름이 성공적으로 수정되었습니다.");
 
           }
-          }).catch(error => {
-            alert("상점 이름 수정에 실패했습니다.");
-            console.error("Error:", error);
+          })
+          .catch(async error => {
+            if (error.response && error.response.status === 401) {
+                // 액세스 토큰이 만료되었을 때
+                await reissueToken();
+                console.log("액세스 토큰 재발급")
+                fetchStores();
+            
+            } else {
+                console.error('Error fetching factory:', error);
+                alert('로그인 시간 만료');
+                navigate('/');
+            }
           });
         }
       };
@@ -75,7 +107,7 @@ const StoreList = () => {
       <Header />
       <BodyHeader />
       <SearchBox onSearch={handleSearch}/>
-      <div className="store-list" style={{marginTop : '15px'}}>
+      <div className="store-list" style={{marginTop : '15px', flexGrow: '1', overflow: 'auto'}}>
         <table className="table mx-auto">
           <thead>
             <tr>

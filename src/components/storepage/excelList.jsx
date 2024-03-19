@@ -1,9 +1,9 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom'; 
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import Header from '../fragment/header';
 import BodyHeader from '../fragment/bodyheader';
+import client from '../client';
 
 const ExcelDataList = () => {
   const location = useLocation();
@@ -14,7 +14,7 @@ const ExcelDataList = () => {
     e.preventDefault();
     try {
         // 서버에 데이터 저장 요청 보내기
-        const response = await axios.post('http://localhost:8080/api/stores/save', datas, {
+        const response = await client.post('/api/stores/save', datas, {
           withCredentials: true,
           headers: {
             'Content-Type': 'application/json',

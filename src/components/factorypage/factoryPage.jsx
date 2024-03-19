@@ -48,6 +48,7 @@ const Factory = () => {
                 // 액세스 토큰이 만료되었을 때
                 await reissueToken();
                 console.log("액세스 토큰 재발급")
+                fetchFactory();
             
             } else {
                 console.error('Error fetching products:', error);
