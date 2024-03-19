@@ -77,7 +77,7 @@ a.btn {
 .product-list {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around ;
+    justify-content: space-between ;
     align-items: center;
     gap: 10px;
     margin-top: 15px;
@@ -194,6 +194,20 @@ input {
 
 .hidden {
     display: none;
+}
+
+.store-list{
+    display: flex;
+    flex-wrap: wrap;
+    flex-grow: 1;
+    height: 70vh;
+    overflow: auto;
+    justify-content: space-around ;
+    align-items: center;
+    align-content: flex-start;
+    gap: 10px;
+    margin-top: 15px;
+    margin-bottom: 15px;
 }
 
 /* 버튼 css */

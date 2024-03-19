@@ -107,7 +107,7 @@ const StoreList = () => {
       <Header />
       <BodyHeader />
       <SearchBox onSearch={handleSearch}/>
-      <div className="store-list" style={{marginTop : '15px', flexGrow: '1', overflow: 'auto'}}>
+      <div className="store-list" >
         <table className="table mx-auto">
           <thead>
             <tr>

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Header from '../fragment/header';
 import BodyHeader from '../fragment/bodyheader';
+import client from '../client';
 
 const ExcelUpload = () => {
   const [file, setFile] = useState(null);
@@ -18,10 +18,11 @@ const ExcelUpload = () => {
     formData.append('file', file);
 
     try {
-      const response = await axios.post('http://localhost:8080/api/excel/read', formData, {
+      const response = await client.post('/api/excel/read', formData, {
         withCredentials: true,  
         headers: {
             'Content-Type': 'multipart/form-data',
+            'access' : localStorage.getItem('access')
           },
       });
       nav('/store/read', { state: {data :response.data }}); 
@@ -36,7 +37,7 @@ const ExcelUpload = () => {
         <Header/>
         <BodyHeader />
         <form onSubmit={handleSubmit} method="POST" enctype="multipart/form-data">
-            <input type="file" name="file" onChange={handleFileChange} style={{ marginBottom: '15px',  marginTop :'15px'}} />
+            <input type="file" name="file" onChange={handleFileChange} style={{ marginBottom: '15px'}} />
             <button className='excel-btn' type="submit">제출</button>
         </form>
       

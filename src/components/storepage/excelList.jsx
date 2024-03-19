@@ -14,10 +14,10 @@ const ExcelDataList = () => {
     e.preventDefault();
     try {
         // 서버에 데이터 저장 요청 보내기
-        const response = await client.post('/api/stores/save', datas, {
+        const response = await client.post('/stores/save', datas, {
           withCredentials: true,
           headers: {
-            'Content-Type': 'application/json',
+            'access' : localStorage.getItem('access')
           } 
         });
         console.log(response.data); // 서버 응답 출력

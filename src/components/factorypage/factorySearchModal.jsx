@@ -80,13 +80,12 @@ const FactorySearchModal = ({ isOpen, onRequestClose, onFactorySelect }) => {
                 </div>
                 
                 <SearchBox onSearch={handleSearch}/>
-                <div className="store-list" style={{marginTop : '15px', flexGrow: '1', overflow: 'auto'}}>
+                <div className="store-list">
                         <table className="table mx-auto">
                             <thead>
                                 <tr>
                                     <th className="th-1" scope="col">번호</th>
                                     <th className="th-1">이름</th>
-                                    <th className="th-1"></th>
                                 </tr>
                             </thead>
                             <tbody>

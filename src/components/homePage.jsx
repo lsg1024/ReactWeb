@@ -1,7 +1,6 @@
 import React, {useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from './fragment/header';
-import Footer from './fragment/footer';
 import client from './client';
 import { useNavigate } from 'react-router-dom';
 import BodyHeader from './fragment/bodyheader';
@@ -69,7 +68,6 @@ const HomePage = () => {
           </p>
         </div>
       </div> 
-      <Footer />
     </div>
   );
 }
