@@ -5,6 +5,7 @@ import HomePage from './components/homePage';
 import LoginPage from './components/loginpage/loginpage';
 import SignupPage from './components/loginpage/signuppage';
 import ProductPage from './components/productpage/product';
+import ProductCreate from './components/productpage/productCreate';
 import ProductDetail from './components/productpage/productDetail';
 import ExcelUpload from './components/storepage/excelLoadPage';
 import ExcelDataList from './components/storepage/excelList';
@@ -31,7 +32,7 @@ function App() {
           <Route path="/stores" element={<StorePage/>}/>
           <Route path="/factory" element={<Factoty/>}/>
           <Route path='/users' element={<Users/>}/>
-          <Route path='/product/create' element={<ExcelUpload/>}/>
+          <Route path='/product/create' element={<ProductCreate/>}/>
         </Routes>
       </Router>
     </UserProvider>

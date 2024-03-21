@@ -75,7 +75,7 @@ const FactorySearchModal = ({ isOpen, onRequestClose, onFactorySelect }) => {
             <div className='container'>
 
                 <div style={{position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-                <h2>공장 검색</h2>
+                <h3>공장 검색</h3>
                 <button style= {{width: '40px', height: '40px', margin: '20px', border: 'none', backgroundColor: 'white'}} onClick={onRequestClose}>X</button>
                 </div>
                 

@@ -247,6 +247,7 @@ const ProductDetail = () => {
               className="form-control" 
               placeholder="상품명을 입력하세요"
               readOnly
+              style={{cursor: 'default'}}
             />
             <img src={searchImage} alt="Search" className="search-icon" hidden={!isEditing} onClick={handleSearchIconClick} />
             <FactorySearchModal isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)} onFactorySelect={handleFactorySelect}/>
