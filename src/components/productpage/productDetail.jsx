@@ -31,7 +31,7 @@ const ProductDetail = () => {
   const [uploadedImages, setUploadedImages] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  
+
   const SlickButtonFix = ({ children, ...props }) => (
     <span {...props}>{children}</span>
   );
@@ -150,7 +150,7 @@ const ProductDetail = () => {
       // 이미지가 있을 경우에만 FormData에 추가
       if (uploadedImages.length > 0) {
         uploadedImages.forEach((file, index) => {
-            formData.append(`images[${index}]`, file);
+            formData.append(`images`, file);
         });
       } else {
         // 이미지가 없음을 명시적으로 표시하는 경우
@@ -233,6 +233,21 @@ const ProductDetail = () => {
 
       <form onSubmit={handleSave} style={{ marginTop: '50px' }}>
         <div className='form-row'>
+          {/* 상품명 */}
+          <div className="form-group" style={{marginBottom : '5px'}}>
+            <label htmlFor="name">상품명</label>
+            <input type="text" id="name" name="name" value={product.name} onChange={handleChange} disabled={!isEditing} className="form-control" placeholder="상품명을 입력하세요" />
+          </div>
+
+          {/* 시리얼 번호 */}
+          <div className="form-group" style={{marginBottom : '5px'}}>
+            <label htmlFor="color">시리얼</label>
+            <input type="text" id="color" name="color" value={product.color} onChange={handleChange} disabled={!isEditing} className="form-control" placeholder="시리얼을 입력하세요" />
+          </div>
+        </div>
+        
+        <div className='form-row'>
+
           {/* 공장 */}
           <div className="form-group" style={{marginBottom : '5px'}}>
             <label htmlFor="name">공장</label>
@@ -245,7 +260,7 @@ const ProductDetail = () => {
               onChange={handleChange} 
               disabled={!isEditing} 
               className="form-control" 
-              placeholder="상품명을 입력하세요"
+              placeholder="공장명을 입력하세요"
               readOnly
               style={{cursor: 'default'}}
             />
@@ -253,15 +268,7 @@ const ProductDetail = () => {
             <FactorySearchModal isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)} onFactorySelect={handleFactorySelect}/>
             </div>
           </div>
-          
-          {/* 상품명 */}
-          <div className="form-group" style={{marginBottom : '5px'}}>
-            <label htmlFor="name">상품명</label>
-            <input type="text" id="name" name="name" value={product.name} onChange={handleChange} disabled={!isEditing} className="form-control" placeholder="상품명을 입력하세요" />
-          </div>
-        </div>
-        
-        <div className='form-row'>
+
           {/* 색상 */}
           <div className="form-group" style={{marginBottom : '5px'}}>
             <label htmlFor="color">색상</label>
@@ -273,23 +280,33 @@ const ProductDetail = () => {
             <label htmlFor="size">크기</label>
             <input type="text" id="size" name="size" value={product.size} onChange={handleChange} disabled={!isEditing} className="form-control" placeholder="크기를 입력하세요" />
           </div>
-        </div>
 
-        <div className='form-row'>
           {/* 무게 */}
           <div className="form-group" style={{marginBottom : '5px'}}>
             <label htmlFor="weight">무게</label>
             <input type="text" id="weight" name="weight" value={product.weight} onChange={handleChange} disabled={!isEditing} className="form-control" placeholder="무게를 입력하세요" />
           </div>
 
-          {/* 기타 정보 */}
-          <div className="form-group">
-            <label htmlFor="other">기타 정보</label>
-            <input type="text" id="other" name="other" value={product.other} onChange={handleChange} disabled={!isEditing} className="form-control" placeholder="기타 정보를 입력하세요" />
-          </div>
         </div>
 
-        <div style={{ textAlign: 'center', marginTop: '100px'}}>
+        <div className='form-row'>
+              {/* 기타 정보 */}
+              <div style={{width:"100%", paddingLeft:"15px", paddingRight:"15px"}}>
+                <label htmlFor="other">기타 정보</label>
+                <textarea
+                  id="other"
+                  name="other"
+                  value={product.other}
+                  onChange={handleChange}
+                  className="form-control"
+                  placeholder="기타 정보를 입력하세요"
+                  rows="4"
+                  disabled={!isEditing}
+                ></textarea>
+              </div>
+            </div>
+
+        <div style={{ textAlign: 'center'}}>
         <button className='custom-btn btn-5' type="button" onClick={handleEdit} hidden={isEditing}>수정하기</button>
         <button className='custom-btn btn-5' type="submit" hidden={!isEditing}>수정완료</button>
         </div>

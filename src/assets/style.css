@@ -85,14 +85,18 @@ table>tbody {
 .product-list {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between ;
+    justify-content: flex-start;
     align-items: center;
     gap: 10px;
+    flex-grow: 1;
     margin-top: 15px;
     margin-bottom: 15px;
+    flex-direction: row;
+    align-content: flex-start;
+    height: 70vh;
 }
 .product-item {
-    flex-basis: calc(33.333% - 20px);
+    flex-basis: calc(33.333% - 7px);
     border: 1px solid #ddd;
     padding: 2px;
     border-radius: 8px;
@@ -437,7 +441,7 @@ display: none; /* input 타입을 숨깁니다 */
 }
   .model {
     position:fixed;
-    height: 70%;
+    height: 80%;
     top: 50%;
     left: 50%;
     width: 40%;
@@ -456,3 +460,9 @@ display: none; /* input 타입을 숨깁니다 */
     flex-direction: column;
     height: 100%;
   }
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
