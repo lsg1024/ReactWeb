@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import Header from "../fragment/header";
 import BodyHeader from "../fragment/bodyheader";
 import { useNavigate } from 'react-router-dom';
@@ -14,21 +14,63 @@ import FactorySearchModal from '../factorypage/factorySearchModal';
 
 const ProductCreate = () => {
 
-    const navigate = useNavigate();
-    const [uploadedImages, setUploadedImages] = useState([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
+  const [uploadedImages, setUploadedImages] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const [product, setProduct] = useState({
-        name: '',
-        serialNumber: '',
-        color: '',
-        size: '',
-        weight: '',
-        other: '',
-        image: [],
-        factoryId: '',
-        factoryName: ''
-      });
+  const [product, setProduct] = useState({
+      name: '',
+      serialNumber: '',
+      color: '',
+      size: '',
+      weight: '',
+      other: '',
+      image: [],
+      factoryId: '',
+      factoryName: ''
+    });
+
+    const nameRef = useRef(null);
+    const serialNumberRef = useRef(null);
+    const factoryNameRef = useRef(null);
+    const colorRef = useRef(null);
+    const sizeRef = useRef(null);
+    const weightRef = useRef(null);
+    const otherRef = useRef(null);
+  
+    // refs를 순회하기 위한 배열
+    const inputRefs = [nameRef, serialNumberRef, factoryNameRef, colorRef, sizeRef, weightRef, otherRef];
+  
+    const handleKeyDown = async (event, currentIndex) => {
+      // Enter 키와 Tab 키 처리
+      if (event.key === 'Enter' || event.key === 'Tab') {
+        event.preventDefault(); // 폼 제출 및 기본 Tab 동작 방지
+    
+        // 공장 필드에 있을 때 API 호출
+        if (currentIndex === 2) {
+          const isSuccess = await handleInputFinish(event); // API 호출 및 결과 확인
+          if (isSuccess) {
+            // API 호출 성공 시, 다음 필드로 포커스 이동
+            moveToNextField(currentIndex);
+          }
+          return; // 다음 로직을 실행하지 않고 함수 종료
+        } else {
+          // 공장 필드가 아닐 경우, 다음 필드로 포커스 이동
+          moveToNextField(currentIndex);
+        }
+      }
+    };
+  
+    // 다음 필드로 포커스 이동하는 로직을 별도의 함수로 분리
+    const moveToNextField = (currentIndex) => {
+      const nextIndex = currentIndex + 1;
+      if (nextIndex < inputRefs.length) {
+        inputRefs[nextIndex].current.focus(); // 다음 입력 필드로 포커스 이동
+      } else {
+        // 마지막 입력 필드인 경우, 포커스 제거
+        inputRefs[currentIndex].current.blur();
+      }
+    };
 
     const SlickButtonFix = ({ children, ...props }) => (
     <span {...props}>{children}</span>
@@ -144,11 +186,6 @@ const ProductCreate = () => {
     const handleImageUpload = (e) => {
         const files = e.target.files;
         if (files && files.length > 0) {
-          Array.from(files).forEach(file => {
-            console.log(`File Name: ${file.name}`);
-            console.log(`File Type: ${file.type}`);
-            console.log(`File Size: ${file.size} bytes`);
-        });
           setUploadedImages([...uploadedImages, ...Array.from(files)]);
         }
       };
@@ -172,23 +209,60 @@ const ProductCreate = () => {
   
     const handleSave = async (e) => {
       e.preventDefault();
-
       await createProduct();
       
     };
-  
-    const handleChange = (e) => {
-      const { name, value } = e.target;
-      setProduct(prevState => ({ ...prevState, [name]: value }));
 
-      if (e.target.name === 'serialNumber'|| e.target.name === 'color' || e.target.name === 'size' || e.target.name === 'weight') {
-        const cleanedValue = e.target.value.replace(/[^0-9]/g, '');
-        setProduct(prevState => ({ ...prevState, [e.target.name]: cleanedValue }));
-      } else {
-        setProduct(prevState => ({ ...prevState, [e.target.name]: e.target.value }));
+  // Enter 키 누르거나 다른 Tab으로 이동할 때 실행되는 함수
+  const handleInputFinish = async (event) => {
+    if (event.key === 'Enter' || event.key === 'Tab') {
+      try {
+        const response = await client.get(`/api/factory?factoryName=${encodeURIComponent(product.factoryName)}`, {
+          headers: { "access": localStorage.getItem("access") }
+        });
+        // 성공적으로 공장 목록을 가져온 후의 로직을 여기에 구현합니다.
+        if (response.status === 200) {
+          return true;
+        }
+        // 409 에러 핸들링 등 필요한 경우 이곳에서 처리
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          await reissueToken();
+          handleInputFinish();
+        } else if (error.response && error.response.status === 409){
+          setIsModalOpen(true); // 409 에러 발생 시 모달 열기
+          return false;
+        } else {
+          console.error('factories:', error);
+          alert('로그인 시간 만료');
+          navigate('/');
+        }
       }
-    };
-
+    }
+  };
+  
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+  
+    // serialNumber, size, weight 필드에 대한 처리
+    if (['serialNumber', 'size', 'weight'].includes(name)) {
+      // 현재 값 확인을 위해 문자열 타입으로 변환
+      const currentValue = product[name] ? product[name].toString() : '';
+  
+      // 새로운 입력값이 소수점이고, 현재 값에 이미 소수점이 있다면, 추가 입력을 무시
+      if (value.endsWith('.') && currentValue.includes('.')) {
+        return; // 아무런 동작도 하지 않고 리턴
+      }
+  
+      // 숫자, 소수점만 허용 (연속된 소수점 입력 방지 포함)
+      const cleanedValue = value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
+  
+      setProduct(prevState => ({ ...prevState, [name]: cleanedValue }));
+    } else {
+      setProduct(prevState => ({ ...prevState, [name]: value }));
+    }
+  };  
+    
     return (
         <div className="container">
           <Header/>
@@ -239,13 +313,13 @@ const ProductCreate = () => {
               {/* 상품명 */}
               <div className="form-group" style={{marginBottom : '5px'}}>
                 <label htmlFor="name">상품명</label>
-                <input type="text" id="name" name="name" value={product.name} onChange={handleChange} className="form-control" placeholder="상품명을 입력하세요" />
+                <input ref={nameRef} onKeyDown={(e) => handleKeyDown(e, 0)} type="text" id="name" name="name" value={product.name} onChange={handleChange} className="form-control" placeholder="상품명을 입력하세요" />
               </div>
 
               {/* 시리얼 번호 */}
               <div className="form-group" style={{marginBottom : '5px'}}>
                   <label htmlFor="serialNumber">시리얼</label>
-                  <input type="text" id="serialNumber" name="serialNumber" pattern='[0-9]+' value={product.serialNumber} onChange={handleChange} className="form-control" placeholder="시리얼을 입력하세요" />
+                  <input ref={serialNumberRef} onKeyDown={(e) => handleKeyDown(e, 1)} type="text" id="serialNumber" name="serialNumber" pattern='[0-9]+' value={product.serialNumber} onChange={handleChange} className="form-control" placeholder="시리얼을 입력하세요" />
               </div>
 
             </div>
@@ -257,15 +331,17 @@ const ProductCreate = () => {
                 <label htmlFor="name">공장</label>
                 <div className='factory-form-group'>
                   <input
+                  ref={factoryNameRef}
                   type="text"
-                  id="name" 
-                  name="name" 
+                  id="factoryName"
+                  name="factoryName"
                   value={product.factoryName} 
                   onChange={handleChange} 
                   className="form-control" 
                   placeholder="공장명을 입력하세요"
-                  readOnly
                   style={{cursor: 'default'}}
+                  onBlur={handleInputFinish}
+                  onKeyDown={(e) => handleKeyDown(e, 2)}
                 />
                 <img src={searchImage} alt="Search" className="search-icon" onClick={handleSearchIconClick} />
                 <FactorySearchModal isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)} onFactorySelect={handleFactorySelect}/>
@@ -275,19 +351,19 @@ const ProductCreate = () => {
               {/* 색상 */}
               <div className="form-group" style={{marginBottom : '5px'}}>
                 <label htmlFor="color">색상</label>
-                <input type="text" id="color" name="color" value={product.color} pattern='[0-9]+' onChange={handleChange} className="form-control" placeholder="색상을 입력하세요" />
+                <input ref={colorRef} onKeyDown={(e) => handleKeyDown(e, 3)} type="text" id="color" name="color" value={product.color} pattern='[0-9]+' onChange={handleChange} className="form-control" placeholder="색상을 입력하세요" />
               </div>
     
               {/* 크기 */}
               <div className="form-group" style={{marginBottom : '5px'}}>
                 <label htmlFor="size">크기</label>
-                <input type="text" id="size" name="size" value={product.size} pattern='[0-9]+' onChange={handleChange} className="form-control" placeholder="크기를 입력하세요" />
+                <input ref={sizeRef} onKeyDown={(e) => handleKeyDown(e, 4)} type="text" id="size" name="size" value={product.size} pattern='[0-9]+' onChange={handleChange} className="form-control" placeholder="크기를 입력하세요" />
               </div>
 
               {/* 무게 */}
               <div className="form-group" style={{marginBottom : '5px'}}>
                 <label htmlFor="weight">무게</label>
-                <input type="text" id="weight" name="weight" value={product.weight} pattern='[0-9]+' onChange={handleChange}  className="form-control" placeholder="무게를 입력하세요" />
+                <input ref={weightRef} onKeyDown={(e) => handleKeyDown(e, 5)} type="text" id="weight" name="weight" value={product.weight} pattern='[0-9]+' onChange={handleChange}  className="form-control" placeholder="무게를 입력하세요" />
               </div>
 
             </div>
@@ -297,6 +373,7 @@ const ProductCreate = () => {
               <div style={{width:"100%", paddingLeft:"15px", paddingRight:"15px"}}>
                 <label htmlFor="other">기타 정보</label>
                 <textarea
+                  ref={otherRef}
                   id="other"
                   name="other"
                   value={product.other}
@@ -304,11 +381,12 @@ const ProductCreate = () => {
                   className="form-control"
                   placeholder="기타 정보를 입력하세요"
                   rows="4"
+                  onKeyDown={(e) => handleKeyDown(e, 6)}
                 ></textarea>
               </div>
             </div>
             <div style={{ textAlign: 'center'}}>
-            <button className='custom-btn btn-5' type="submit" onClick={handleSave}>등록하기</button>
+            <button className='custom-btn btn-5' type="botton" onClick={handleSave}>등록하기</button>
             </div>
           </form>
         </div>

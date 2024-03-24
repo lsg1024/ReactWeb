@@ -30,7 +30,7 @@ const FactorySearchModal = ({ isOpen, onRequestClose, onFactorySelect }) => {
     const fetchFactory = useCallback(async (currentPage, searchQuery) => {
         const url  = searchQuery 
         ? `/api/factory/search?factorySearch=${searchQuery}&page=${currentPage}`
-        : `/api/factory?page=${currentPage}`;
+        : `/api/factories?page=${currentPage}`;
     
         await client.get(url, {
             headers: {
