@@ -37,36 +37,30 @@ const ProductDetail = () => {
   const weightRef = useRef(null);
   const otherRef = useRef(null);
 
-  // refs를 순회하기 위한 배열
   const inputRefs = [nameRef, serialNumberRef, factoryNameRef, colorRef, sizeRef, weightRef, otherRef];
 
   const handleKeyDown = async (event, currentIndex) => {
     // Enter 키와 Tab 키 처리
     if (event.key === 'Enter' || event.key === 'Tab') {
-      event.preventDefault(); // 폼 제출 및 기본 Tab 동작 방지
+      event.preventDefault(); 
   
       // 공장 필드에 있을 때 API 호출
-      if (currentIndex === 2) {
-        const isSuccess = await handleInputFinish(event); // API 호출 및 결과 확인
-        if (isSuccess) {
-          // API 호출 성공 시, 다음 필드로 포커스 이동
-          moveToNextField(currentIndex);
-        }
-        return; // 다음 로직을 실행하지 않고 함수 종료
-      } else {
-        // 공장 필드가 아닐 경우, 다음 필드로 포커스 이동
+      if (currentIndex === 1) {
+        handleSearchIconClick();
+        moveToNextField(currentIndex);
+        return;
+      } 
+      else {
         moveToNextField(currentIndex);
       }
     }
   };
 
-  // 다음 필드로 포커스 이동하는 로직을 별도의 함수로 분리
   const moveToNextField = (currentIndex) => {
     const nextIndex = currentIndex + 1;
     if (nextIndex < inputRefs.length) {
-      inputRefs[nextIndex].current.focus(); // 다음 입력 필드로 포커스 이동
+      inputRefs[nextIndex].current.focus();
     } else {
-      // 마지막 입력 필드인 경우, 포커스 제거
       inputRefs[currentIndex].current.blur();
     }
   };
@@ -126,34 +120,6 @@ const ProductDetail = () => {
     setIsModalOpen(false);
   };
 
-
-  // Enter 키 누르거나 다른 Tab으로 이동할 때 실행되는 함수
-  const handleInputFinish = async (event) => {
-    if (event.key === 'Enter' || event.key === 'Tab') {
-      try {
-        const response = await client.get(`/api/factory?factoryName=${encodeURIComponent(product.factoryName)}`, {
-          headers: { "access": localStorage.getItem("access") }
-        });
-        // 성공적으로 공장 목록을 가져온 후의 로직을 여기에 구현합니다.
-        if (response.status === 200) {
-          return true;
-        }
-        // 409 에러 핸들링 등 필요한 경우 이곳에서 처리
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          await reissueToken();
-          handleInputFinish();
-        } else if (error.response && error.response.status === 409){
-          setIsModalOpen(true); // 409 에러 발생 시 모달 열기
-          return false;
-        } else {
-          console.error('factories:', error);
-          alert('로그인 시간 만료');
-          navigate('/');
-        }
-      }
-    }
-  };
 
   const handleSave = (e) => {
     e.preventDefault();
@@ -282,11 +248,22 @@ const ProductDetail = () => {
         {uploadedImages.length > 0 ? (
           <Slider {...sliderSettings}>
             {uploadedImages.map((imgUrl, index) => (
-              <div key={index}>
-                <img src={URL.createObjectURL(imgUrl)} alt={`Uploaded ${index + 1}`} />
-                <button onClick={() => removeUploadedImage(imgUrl)}>Remove</button>
-              </div>
-            ))}
+                  <div key={index} style={{ position: 'relative' }}>
+                    <img src={URL.createObjectURL(imgUrl)} alt={`Uploaded ${index + 1}`} style={{ width: '100%', height: 'auto' }} />
+                    <button 
+                      onClick={() => removeUploadedImage(imgUrl)} 
+                      style={{
+                        position: 'absolute',
+                        top: '10px',
+                        right: '10px',
+                        cursor: 'pointer',
+                        border: 'none', 
+                        backgroundColor: 'white'
+                      }}>
+                      X
+                    </button>
+                  </div>
+                ))}
           </Slider>
         ) : (product.image && product.image.length > 0) ? (
           <Slider {...sliderSettings}>
@@ -349,7 +326,8 @@ const ProductDetail = () => {
               className="form-control"
               placeholder="공장명을 입력하세요"
               style={{cursor: 'default'}}
-              onBlur={handleInputFinish}
+              readOnly
+              onClick={handleSearchIconClick}
               onKeyDown={(e) => handleKeyDown(e, 2)}
               />
             <img src={searchImage} alt="Search" className="search-icon" hidden={!isEditing} onClick={handleSearchIconClick} />

@@ -5,7 +5,7 @@ import Header from '../fragment/header';
 import BodyHeader from '../fragment/bodyheader';
 import client from '../client';
 
-const ExcelDataList = () => {
+const StoreList = () => {
   const location = useLocation();
   const nav = useNavigate();
   const datas = location.state?.data; 
@@ -56,4 +56,4 @@ const ExcelDataList = () => {
   );
 };
 
-export default ExcelDataList;
+export default StoreList;
