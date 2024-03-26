@@ -7,10 +7,11 @@ import SignupPage from './components/loginpage/signuppage';
 import ProductPage from './components/productpage/product';
 import ProductCreate from './components/productpage/productCreate';
 import ProductDetail from './components/productpage/productDetail';
-import StoreUpload from './components/storepage/storeUpload';
 import StoreList from './components/storepage/storeList';
 import StorePage from './components/storepage/storePage';
-import Factoty from './components/factorypage/factoryPage'
+import Factoty from './components/factorypage/factoryPage';
+import FactoryList from './components/factorypage/factoryList';
+import ExcelUpload from './components/excelPage/excelUpload';
 import Users from './components/userpage/userpage';
 import { UserProvider } from './UserContext';
 // 다른 페이지 컴포넌트도 여기에 임포트
@@ -27,11 +28,12 @@ function App() {
           <Route path="/home" element={<HomePage/>} />
           <Route path="/product" element={<ProductPage/>} />
           <Route path="/product/detail/:productId" element={<ProductDetail/>} />
-          <Route path="/store/create/excel" element={<StoreUpload/>}/>
+          <Route path="/store/create/excel" element={<ExcelUpload/>}/>
           <Route path="/store/read" element={<StoreList/>}/>
           <Route path="/stores" element={<StorePage/>}/>
           <Route path="/factory" element={<Factoty/>}/>
-          
+          <Route path="/factory/create" element={<ExcelUpload/>}/>
+          <Route path="/factory/read" element={<FactoryList/>}/>
           <Route path='/users' element={<Users/>}/>
           <Route path='/product/create' element={<ProductCreate/>}/>
         </Routes>

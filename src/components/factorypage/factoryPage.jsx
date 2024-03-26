@@ -30,8 +30,8 @@ const Factory = () => {
 
     const fetchFactory = useCallback(async (currentPage, searchQuery) => {
         const url  = searchQuery 
-        ? `/api/factory/search?factorySearch=${searchQuery}&page=${currentPage}`
-        : `/api/factory?page=${currentPage}`;
+        ? `/factory/search?factorySearch=${searchQuery}&page=${currentPage}`
+        : `/factory?page=${currentPage}`;
     
         await client.get(url, {
             headers: {
@@ -70,7 +70,7 @@ const Factory = () => {
     const handleEdit = async (factoryId) => {
         const factoryName = prompt("공장 이름을 수정하세요:", "");
         if (factoryName != null && factoryName !== "") {
-            await client.post(`/api/factory/update?factoryId=${factoryId}`, 
+            await client.post(`/factory/update?factoryId=${factoryId}`, 
             {
                 factoryId: factoryId,
                 factoryName: factoryName 

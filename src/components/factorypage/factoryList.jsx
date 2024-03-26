@@ -5,19 +5,17 @@ import Header from '../fragment/header';
 import BodyHeader from '../fragment/bodyheader';
 import client from '../client';
 
-const StoreList = () => {
+const FactoryList = () => {
   const location = useLocation();
   const nav = useNavigate();
   const datas = location.state?.data; 
 
   const handleSave = async (e) => {
     e.preventDefault();
-
-    const storeNames = datas.map(data => ({ storeNames: data.storeName }));
-
     try {
         // 서버에 데이터 저장 요청 보내기
-        const response = await client.post('/stores/save', storeNames, {
+        const response = await client.post('/stores/save', datas, {
+          withCredentials: true,
           headers: {
             'access' : localStorage.getItem('access')
           } 
@@ -58,4 +56,4 @@ const StoreList = () => {
   );
 };
 
-export default StoreList;
+export default FactoryList;

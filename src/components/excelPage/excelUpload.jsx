@@ -1,12 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../fragment/header';
 import BodyHeader from '../fragment/bodyheader';
 import client from '../client';
 
-const FactoryUpload = () => {
+const ExcelUpload = () => {
   const [file, setFile] = useState(null);
-  const nav = useNavigate();
+  const navigate = useNavigate();
+
+    //토큰 리프레쉬
+    const reissueToken = useCallback(async (callback) => {
+      try {
+        const response = await client.post('/reissue');
+        const { status, headers } = response;
+        if (status === 200) {
+          const accessToken = headers['access'];
+          localStorage.setItem("access", accessToken);
+        }
+      } catch (error) {
+        navigate('/');
+      }
+    }, [navigate]);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -16,7 +30,7 @@ const FactoryUpload = () => {
     e.preventDefault();
     const formData = new FormData();
     formData.append('file', file);
-
+    
     try {
       const response = await client.post('/api/excel/read', formData, {
         withCredentials: true,  
@@ -25,10 +39,15 @@ const FactoryUpload = () => {
             'access' : localStorage.getItem('access')
           },
       });
-      nav('/store/read', { state: {data :response.data }}); 
+      navigate('/store/read', { state: {data :response.data }}); 
     } catch (error) {
-      alert('파일이 정상적으로 업로드 되었는지 확인해주세요.')
-      console.error('엑셀 파일 업로드 중 오류가 발생했습니다.', error);
+      if (error.response.status === 401) {
+        await reissueToken();
+        handleSubmit(e);
+      } else {
+        alert('파일이 정상적으로 업로드 되었는지 확인해주세요.')
+        console.error('엑셀 파일 업로드 중 오류가 발생했습니다.', error.FormData);
+      }
     }
   };
 
@@ -45,4 +64,4 @@ const FactoryUpload = () => {
   );
 };
 
-export default FactoryUpload;
+export default ExcelUpload;
