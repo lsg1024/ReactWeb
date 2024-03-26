@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import { useLocation } from 'react-router-dom'; 
 import { useNavigate } from 'react-router-dom';
 import Header from '../fragment/header';
@@ -7,25 +7,44 @@ import client from '../client';
 
 const StoreList = () => {
   const location = useLocation();
-  const nav = useNavigate();
+  const navigate = useNavigate();
   const datas = location.state?.data; 
+
+  const reissueToken = useCallback(async () => {
+    try {
+        const response = await client.post('/reissue');
+        const { status, headers } = response;
+        if (status === 200) {
+            const accessToken = headers['access'];
+            localStorage.setItem("access", accessToken);
+        }
+    } catch (error) {
+        console.error('Error reissuing token:', error);
+        navigate('/');
+    }
+}, [navigate]);
 
   const handleSave = async (e) => {
     e.preventDefault();
 
-    const storeNames = datas.map(data => ({ storeNames: data.storeName }));
+    const storeNames = datas.map(data => ({ storeName: data.name }));
 
+    console.log(JSON.stringify(storeNames))
     try {
         // 서버에 데이터 저장 요청 보내기
-        const response = await client.post('/stores/save', storeNames, {
+        const response = await client.post('/stores', storeNames, {
           headers: {
             'access' : localStorage.getItem('access')
           } 
         });
         console.log(response.data); // 서버 응답 출력
         alert('데이터가 성공적으로 저장되었습니다.'); // 사용자에게 성공 알림
-        nav('/store/create/excel')
+        navigate('/store/create')
       } catch (error) {
+        if (error.response.status === 401) {
+          await reissueToken();
+          handleSave(e);
+        }
         console.error('데이터 저장 중 오류가 발생했습니다.', error);
         alert('데이터 저장 중 오류가 발생했습니다.'); // 사용자에게 오류 알림
       }
@@ -48,8 +67,8 @@ const StoreList = () => {
         <tbody>
           {datas?.map((data, index) => ( 
             <tr key={index}>
-              <td>{data.storeId}</td>
-              <td>{data.storeName}</td>
+              <td>{data.id}</td>
+              <td>{data.name}</td>
             </tr>
           ))}
         </tbody>

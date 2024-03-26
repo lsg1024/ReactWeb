@@ -11,6 +11,7 @@ import StoreList from './components/storepage/storeList';
 import StorePage from './components/storepage/storePage';
 import Factoty from './components/factorypage/factoryPage';
 import FactoryList from './components/factorypage/factoryList';
+import FactoryExcelUpload from './components/factorypage/factoyExcelUpload';
 import ExcelUpload from './components/excelPage/excelUpload';
 import Users from './components/userpage/userpage';
 import { UserProvider } from './UserContext';
@@ -28,11 +29,11 @@ function App() {
           <Route path="/home" element={<HomePage/>} />
           <Route path="/product" element={<ProductPage/>} />
           <Route path="/product/detail/:productId" element={<ProductDetail/>} />
-          <Route path="/store/create/excel" element={<ExcelUpload/>}/>
+          <Route path="/store/create" element={<ExcelUpload/>}/>
           <Route path="/store/read" element={<StoreList/>}/>
           <Route path="/stores" element={<StorePage/>}/>
           <Route path="/factory" element={<Factoty/>}/>
-          <Route path="/factory/create" element={<ExcelUpload/>}/>
+          <Route path="/factory/create" element={<FactoryExcelUpload/>}/>
           <Route path="/factory/read" element={<FactoryList/>}/>
           <Route path='/users' element={<Users/>}/>
           <Route path='/product/create' element={<ProductCreate/>}/>

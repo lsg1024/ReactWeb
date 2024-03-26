@@ -15,6 +15,9 @@ const LoginPage = () => {
   const handleLogin = (event) => {
     event.preventDefault(); // 폼 제출 시 새로고침 방지
 
+    localStorage.removeItem("access");
+    localStorage.removeItem("user");
+    
     const loginData = {
       email,
       password,
@@ -66,6 +69,8 @@ const LoginPage = () => {
   };
 
   const kakaoLogin= () => {
+    localStorage.removeItem("access");
+    localStorage.removeItem("user");
     window.location.href = "http://localhost:8080/oauth2/authorization/kakao";
   }
 

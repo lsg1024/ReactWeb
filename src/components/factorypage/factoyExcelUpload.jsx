@@ -4,7 +4,7 @@ import Header from '../fragment/header';
 import BodyHeader from '../fragment/bodyheader';
 import client from '../client';
 
-const ExcelUpload = () => {
+const FactoryExcelUpload = () => {
   const [file, setFile] = useState(null);
   const navigate = useNavigate();
 
@@ -39,7 +39,7 @@ const ExcelUpload = () => {
           },
       });
       console.log(response.data)
-      navigate('/store/read', { state: {data :response.data }}); 
+      navigate('/factory/read', { state: {data :response.data }}); 
     } catch (error) {
       if (error.response.status === 401) {
         await reissueToken();
@@ -64,4 +64,4 @@ const ExcelUpload = () => {
   );
 };
 
-export default ExcelUpload;
+export default FactoryExcelUpload;

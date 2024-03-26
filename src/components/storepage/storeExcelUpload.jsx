@@ -4,7 +4,7 @@ import Header from '../fragment/header';
 import BodyHeader from '../fragment/bodyheader';
 import client from '../client';
 
-const ExcelUpload = () => {
+const StoreExcelUpload = () => {
   const [file, setFile] = useState(null);
   const navigate = useNavigate();
 
@@ -64,4 +64,4 @@ const ExcelUpload = () => {
   );
 };
 
-export default ExcelUpload;
+export default StoreExcelUpload;
