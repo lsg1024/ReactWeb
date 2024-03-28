@@ -12,7 +12,7 @@ import StorePage from './components/storepage/storePage';
 import Factoty from './components/factorypage/factoryPage';
 import FactoryList from './components/factorypage/factoryList';
 import FactoryExcelUpload from './components/factorypage/factoyExcelUpload';
-import ExcelUpload from './components/excelPage/excelUpload';
+import StoreExcelUpload from './components/storepage/storeExcelUpload';
 import Users from './components/userpage/userpage';
 import { UserProvider } from './UserContext';
 // 다른 페이지 컴포넌트도 여기에 임포트
@@ -29,7 +29,7 @@ function App() {
           <Route path="/home" element={<HomePage/>} />
           <Route path="/product" element={<ProductPage/>} />
           <Route path="/product/detail/:productId" element={<ProductDetail/>} />
-          <Route path="/store/create" element={<ExcelUpload/>}/>
+          <Route path="/store/create" element={<StoreExcelUpload/>}/>
           <Route path="/store/read" element={<StoreList/>}/>
           <Route path="/stores" element={<StorePage/>}/>
           <Route path="/factory" element={<Factoty/>}/>

@@ -10,6 +10,7 @@ import "../../assets/slick/slick-theme.css"
 import {NextTo, Prev} from '../../assets/style';
 import camera from '../../image/fill_camera.svg';
 import searchImage from '../../image/search.png';
+import close from '../../image/close.svg'
 import FactorySearchModal from '../factorypage/factorySearchModal';
 
 const ProductCreate = () => {
@@ -243,13 +244,15 @@ const ProductCreate = () => {
                       onClick={() => removeUploadedImage(imgUrl)} 
                       style={{
                         position: 'absolute',
-                        top: '10px',
-                        right: '10px',
+                        top: '-5px',
+                        right: '1px',
                         cursor: 'pointer',
-                        border: 'none', 
-                        backgroundColor: 'white'
+                        border: 'none',
+                        backgroundColor: 'white',
+                        borderRadius: '50%',
+                        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)"
                       }}>
-                      X
+                      <img src={close} alt="" style={{width: '20px', height: '20px'}}/>
                     </button>
                   </div>
                 ))}

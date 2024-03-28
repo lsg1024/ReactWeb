@@ -11,20 +11,20 @@ import "../../assets/slick/slick-theme.css"
 import {NextTo, Prev} from '../../assets/style';
 import camera from '../../image/fill_camera.svg';
 import searchImage from '../../image/search.png';
+import close from '../../image/close.svg'
 import FactorySearchModal from '../factorypage/factorySearchModal';
 
 const ProductDetail = () => {
   const { productId } = useParams(); // URL에서 productId 파라미터를 추출
-
+  const navigate = useNavigate();
   const [product, setProduct] = useState({
     name: '',
-    
     serialNumber: '',
     color: '',
     size: '',
     weight: '',
     other: '',
-    image: [],
+    images: [],
     factoryId: '',
     factoryName: ''
   });
@@ -66,7 +66,6 @@ const ProductDetail = () => {
   };
 
   const [isEditing, setIsEditing] = useState(false);
-  const navigate = useNavigate();
   const [uploadedImages, setUploadedImages] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -123,7 +122,7 @@ const ProductDetail = () => {
 
   const handleSave = (e) => {
     e.preventDefault();
-    updateProduct(); 
+    updateProduct();
     setIsEditing(false);
   };
 
@@ -177,6 +176,7 @@ const ProductDetail = () => {
           }
         });
         setProduct(response.data);
+        console.log(response.data);
       } catch (error) {
         await reissueToken();
         fetchProductDetails();
@@ -239,60 +239,99 @@ const ProductDetail = () => {
     }
   }, [product, productId, reissueToken, uploadedImages]);
 
+  const removeServerImage = async (imageId) => {
+    if (window.confirm('이미지를 삭제하시겠습니까?')) {
+
+      try {
+        const response = await client.post(`/images/?imageId=${imageId}`, {
+          headers: {
+            'access': localStorage.getItem('access'),
+          }
+        });
+        if (response.status === 200) {
+          alert('이미지가 성공적으로 삭제되었습니다.');
+          const updatedImages = product.images.filter(img => img.imageId !== imageId);
+          setProduct({...product, images: updatedImages});
+        }
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          await reissueToken();
+          removeServerImage();
+        }
+        else {
+          console.log(error)
+          alert("이미지 삭제를 실패했습니다.")
+        }
+        
+      }
+    }
+  };
+  
+
   return (
     <div className="container">
       <Header/>
       <BodyHeader/>
  
       <div className="slick-slider" style={{ textAlign: 'center', marginTop: '50px' }}>
-        {uploadedImages.length > 0 ? (
+        {uploadedImages.length > 0 || (product.images && product.images.length > 0) ? (
           <Slider {...sliderSettings}>
-            {uploadedImages.map((imgUrl, index) => (
-                  <div key={index} style={{ position: 'relative' }}>
-                    <img src={URL.createObjectURL(imgUrl)} alt={`Uploaded ${index + 1}`} style={{ width: '100%', height: 'auto' }} />
-                    <button 
-                      onClick={() => removeUploadedImage(imgUrl)} 
-                      style={{
-                        position: 'absolute',
-                        top: '10px',
-                        right: '10px',
-                        cursor: 'pointer',
-                        border: 'none', 
-                        backgroundColor: 'white'
-                      }}>
-                      X
-                    </button>
-                  </div>
-                ))}
-          </Slider>
-        ) : (product.image && product.image.length > 0) ? (
-          <Slider {...sliderSettings}>
-            {product.image.map((imgUrl, index) => (
-              <div key={index}>
-                <img src={imgUrl} alt={`Product ${index + 1}`} />
+            {uploadedImages.map((img, index) => (
+              <div key={`uploaded-${index}`} style={{ position: 'relative' }}>
+                <img src={URL.createObjectURL(img)} alt={`Uploaded ${index}`} style={{ width: '100%', height: 'auto' }} />
+                {isEditing && (
+                <button 
+                onClick={() => removeUploadedImage(img.imageId)} 
+                style={{
+                  position: 'absolute',
+                  top: '-5px',
+                  right: '1px',
+                  cursor: 'pointer',
+                  border: 'none',
+                  backgroundColor: 'white',
+                  borderRadius: '50%',
+                  boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)"
+                }}>
+                <img src={close} alt="" style={{width: '20px', height: '20px'}}/>
+                </button>
+              )}
+              </div>
+            ))}
+            {product.images && product.images.map((img, index) => (
+              <div key={`server-${index}`}>
+                <img src={"http://localhost:8080/images/?imagePath=" + img.imagePath} alt={`Server ${index}`} style={{ width: '100%', height: 'auto' }} />
+                {isEditing && (
+                <button 
+                  onClick={() => removeServerImage(img.imageId)} 
+                  style={{
+                    position: 'absolute',
+                    top: '-5px',
+                    right: 'px',
+                    cursor: 'pointer',
+                    border: 'none',
+                    backgroundColor: 'white',
+                    borderRadius: '50%',
+                    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)"
+                  }}>
+                  <img src={close} alt="" style={{width: '20px', height: '20px'}}/>
+                </button>
+              )}
               </div>
             ))}
           </Slider>
         ) : (
           <img src={notImage} alt="Product" className="product-image" />
         )}
-        {/* 이미지 업로드 버튼. isEditing이 true일 때만 렌더링 */}
         {isEditing && (
           <div className="file-upload-wrapper">
-            <input
-              type="file"
-              className="file-upload-input"
-              accept="image/*"
-              multiple
-              onChange={handleImageUpload}
-              id="file-upload"
-            />
+            <input type="file" className="file-upload-input" accept="image/*" multiple onChange={handleImageUpload} id="file-upload" />
             <label htmlFor="file-upload" className="file-upload-button">
-              <img src={camera} alt=''></img>
+              <img src={camera} alt=""></img>
             </label>
           </div>
         )}
       </div>
+
 
       <form onSubmit={handleSave} style={{ marginTop: '50px' }}>
         <div className='form-row'>

@@ -71,7 +71,6 @@ const Product = () => {
     const goToProductDetail = (productId) => {
         navigate(`/product/detail/${productId}`);
     };
-    
 
     return (
         <div>
