@@ -31,7 +31,7 @@ const Factory = () => {
     const fetchFactory = useCallback(async (currentPage, searchQuery) => {
         const url  = searchQuery 
         ? `/factory/search?factorySearch=${searchQuery}&page=${currentPage}`
-        : `/factory?page=${currentPage}`;
+        : `/factories?page=${currentPage}`;
     
         await client.get(url, {
             headers: {

@@ -232,9 +232,23 @@ const ProductDetail = () => {
       if (error.response && error.response.status === 401) {
         await reissueToken();
         updateProduct();
-      } else {
-        console.error('Error:', error);
-        alert("업데이트 실패 : " + error.message);
+      }  else if (error.response && error.response.data) {
+        // 서버로부터 받은 에러 메시지가 있는 경우
+        const errors = error.response.data;
+        
+        // 여러 필드의 에러 메시지를 처리하는 경우
+        if (typeof errors === 'object' && errors !== null) {
+            const errorMessages = Object.keys(errors).map(key => `${key}: ${errors[key]}`).join('\n');
+            alert(`상품 생성 실패:\n${errorMessages}`);
+        } else {
+            // 단일 에러 메시지를 처리하는 경우
+            alert(`상품 생성 실패: ${errors}`);
+        }
+      } 
+      else {
+          // 기타 네트워크 에러 등의 경우
+          console.error("상품 생성 에러", error);
+          alert("상품 생성 실패: 네트워크 오류 또는 알 수 없는 오류 발생");
       }
     }
   }, [product, productId, reissueToken, uploadedImages]);
