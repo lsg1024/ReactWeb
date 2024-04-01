@@ -27,12 +27,12 @@ const FactoryList = () => {
   const handleSave = async (e) => {
     e.preventDefault();
 
-    const factoryNames = datas.map(data => ({factoryNames: data.name}))
+    const factoryNames = datas.map(data => ({factoryName: data.name}))
 
+    console.log(JSON.stringify(factoryNames))
     try {
         // 서버에 데이터 저장 요청 보내기
         const response = await client.post('/factories', factoryNames, {
-          withCredentials: true,
           headers: {
             'access' : localStorage.getItem('access')
           } 
