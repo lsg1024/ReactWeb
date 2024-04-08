@@ -11,8 +11,9 @@ const Users = () => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
+    const [token, setToken] = useState(localStorage.getItem("access") || '')
     const navigate = useNavigate();
-    
+
     const reissueToken = useCallback(async () => {
         try {
             const response = await client.post('/reissue');
@@ -20,10 +21,15 @@ const Users = () => {
             if (status === 200) {
                 const accessToken = headers['access'];
                 localStorage.setItem("access", accessToken);
+                setToken(accessToken);
             }
+            console.log("200 에러 위치")
         } catch (error) {
-            console.error('Error reissuing token:', error);
-            navigate('/');
+            if (error.response && error.response.status === 400) {
+                navigate('/');
+                alert("로그인 유지 시간이 만료되었습니다.")
+            }
+            
         }
     }, [navigate]);
 
@@ -34,10 +40,9 @@ const Users = () => {
         try {
             const response = await client.get(url, {
                 headers: {
-                    "access" : localStorage.getItem("access")
+                    "access" : token
                 }
             })
-            console.log("response status = ",response.status)
             if (response.status === 200) {
                 const {content, totalPages} = response.data;
                 setUsers(content);
@@ -45,18 +50,19 @@ const Users = () => {
             } 
         }
         catch (error) {
-            if (error.response && error.response.status === 401) {
+            if (error.response.status === 401) {
                 await reissueToken();
                 fetchStores(currentPage, searchQuery);
+            
             } 
-            else if (error.status === 403) {
+            else {
                 alert("접근 권한이 없습니다.")
                 navigate("/home")
             }
         }
         
-    }, [reissueToken, navigate]);
-
+    }, [reissueToken, navigate, token]);
+    
     useEffect(() => {
         fetchStores(page, searchTerm);
     }, [fetchStores, page, searchTerm]);
@@ -81,16 +87,18 @@ const Users = () => {
                                 <th className='th-1'>이메일</th>
                                 <th className='th-1'>권한</th>
                                 <th className='th-1'>생성일</th>
+                                <th className='th-1'></th>
                             </tr>
                         </thead>
                         <tbody>
                             {users.map((user, index) => (
-                                <tr key={index}>
+                                <tr key={index} style={{height:'55px', verticalAlign:'middle'}}>
                                     <td>{index + 1}</td>
                                     <td>{user.userName}</td>
                                     <td>{user.userEmail}</td>
                                     <td>{user.role}</td>
                                     <td>{user.lastModifiedDate}</td>
+                                    <td><button className='btn btn-danger edit_btn'>삭제</button></td>
                                 </tr>
                             ))}
                         </tbody>

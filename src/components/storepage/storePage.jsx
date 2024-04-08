@@ -118,7 +118,7 @@ const StoreList = () => {
           </thead>
           <tbody>
             {stores.map((store, index) => (
-              <tr key={index}>
+              <tr key={index} style={{height:'55px', verticalAlign:'middle'}}>
                 <td>{index + 1 + (page - 1) * 10}</td>
                 <td>{store.storeName}</td>
                 <td>
