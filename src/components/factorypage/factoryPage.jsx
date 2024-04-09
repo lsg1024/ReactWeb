@@ -105,6 +105,10 @@ const Factory = () => {
         }
       };
 
+      const handleDelete = async (factoryId) => {
+
+      }
+
     return (
         <div className="container">
             <Header/>
@@ -114,9 +118,9 @@ const Factory = () => {
                 <table className="table mx-auto">
                     <thead>
                         <tr>
-                            <th className="th-1" scope="col">번호</th>
-                            <th className="th-1">이름</th>
-                            <th className="th-1"></th>
+                            <th className="th-1" scope="col" style={{width:'20%'}}>번호</th>
+                            <th className="th-1"style={{width:'50%'}}>이름</th>
+                            <th className="th-1" style={{width:'30%'}}></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -125,8 +129,11 @@ const Factory = () => {
                                 <td>{index + 1 + (page - 1) * 10}</td>
                                 <td>{factory.factoryName}</td>
                                 <td>
-                                <button className="btn btn-primary edit_btn" onClick={() => 
+                                <button className="btn btn-primary edit_btn" style={{marginRight:'10px'}} onClick={() => 
                                     handleEdit(factory.factoryId)}>수정</button>
+
+                                <button className="btn btn-danger edit_btn" onClick={() => 
+                                    handleDelete(factory.factoryId)}>삭제</button>
                                 </td>
                             </tr>
                         ))}
