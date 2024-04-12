@@ -58,10 +58,6 @@ const Factory = () => {
         });
     }, [reissueToken, navigate]);
 
-    useEffect(() => {
-        fetchFactory(page, searchTerm);
-    }, [fetchFactory, page, searchTerm]);
-
     const handleSearch = (query) => {
         setSearchTerm(query);
         setPage(1);
@@ -105,9 +101,64 @@ const Factory = () => {
         }
       };
 
-      const handleDelete = async (factoryId) => {
+      const useConfirm = (message = null, onConfirm, onCancel) => {
+        if (!onConfirm || typeof onConfirm !== "function") {
+          return;
+        }
+        if (onCancel && typeof onCancel !== "function") {
+          return;
+        }
+      
+        const confirmAction = () => {
+          if (window.confirm(message)) {
+            onConfirm();
+          } else {
+            onCancel();
+          }
+        };
+      
+        return confirmAction;
+      };
+      const deleteConfirm = () => handleDelete();
+      const cancelConfirm = () => console.log("취소했습니다.");
+      const confirmDelete = useConfirm(
+        "삭제하시겠습니까?",
+        deleteConfirm,
+        cancelConfirm
+      );
 
+      const handleDelete = async (factoryId) => {
+        
+        await client.post(`/factory/delete?factoryId=${factoryId}`, 
+        {
+            factoryId: factoryId,
+        },
+        {
+            headers: {"access" : localStorage.getItem("access")}}, 
+        ).then(response => {
+            if (response.status === 200) {
+                fetchFactory();
+                console.log("공장 이름이 성공적으로 삭제되었습니다.");
+
+            }
+        }).catch(async error => {
+            if (error.response && error.response.status === 401) {
+                // 액세스 토큰이 만료되었을 때
+                await reissueToken();
+                console.log("액세스 토큰 재발급")
+            
+            } else {
+                console.error('Error fetching products:', error);
+                alert('로그인 시간 만료');
+                navigate('/');
+            }
+        });
+        
       }
+
+      useEffect(() => {
+        fetchFactory(page, searchTerm);
+    }, [fetchFactory, page, searchTerm]);
 
     return (
         <div className="container">
@@ -120,7 +171,8 @@ const Factory = () => {
                         <tr>
                             <th className="th-1" scope="col" style={{width:'20%'}}>번호</th>
                             <th className="th-1"style={{width:'50%'}}>이름</th>
-                            <th className="th-1" style={{width:'30%'}}></th>
+                            <th className="th-1" style={{width:'15%'}}></th>
+                            <th className="th-1" style={{width:'15%'}}></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -131,9 +183,9 @@ const Factory = () => {
                                 <td>
                                 <button className="btn btn-primary edit_btn" style={{marginRight:'10px'}} onClick={() => 
                                     handleEdit(factory.factoryId)}>수정</button>
-
-                                <button className="btn btn-danger edit_btn" onClick={() => 
-                                    handleDelete(factory.factoryId)}>삭제</button>
+                                </td>
+                                <td>
+                                <button className="btn btn-danger edit_btn" onClick={confirmDelete(factory.factoryId)}>삭제</button>
                                 </td>
                             </tr>
                         ))}
