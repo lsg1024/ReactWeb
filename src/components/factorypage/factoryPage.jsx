@@ -54,6 +54,7 @@ const Factory = () => {
                 console.error('Error fetching products:', error);
                 alert('로그인 시간 만료');
                 navigate('/');
+                
             }
         });
     }, [reissueToken, navigate]);
